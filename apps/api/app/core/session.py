@@ -18,11 +18,13 @@ def ensure_session_id(request: Request, response: Response) -> str:
     if sid:
         return sid
     sid = uuid.uuid4().hex
+    # SameSite=none + Secure for cross-site HTTPS (e.g. split UI/API hosts).
     response.set_cookie(
         key=SESSION_COOKIE,
         value=sid,
         httponly=True,
-        samesite="lax",
+        samesite="none",
+        secure=True,
         max_age=SESSION_MAX_AGE,
         path="/",
     )

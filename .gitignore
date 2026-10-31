@@ -37,4 +37,5 @@ coverage/
 Uploads/
 apps/api/uploads/
 apps/api/jobify.db
+apps/api/static/
 *.db
