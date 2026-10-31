@@ -358,6 +358,20 @@ _ROLE_REQUIREMENTS: list[tuple[tuple[str, ...], list[tuple[str, float]]]] = [
 ]
 
 
+# Soft / ubiquitous skills CVs rarely lead with — drop from Role requirements.
+_MINOR_REQUIREMENTS = frozenset(
+    {
+        "Git",
+        "GitHub",
+        "Communication",
+        "Agile",
+        "Scrum",
+        "Jira",
+        "Problem Solving",
+    }
+)
+
+
 def requirements_for_role(role: str) -> list[tuple[str, float]]:
     """
     Return (skill, importance%) for a position title.
@@ -379,13 +393,19 @@ def requirements_for_role(role: str) -> list[tuple[str, float]]:
     for skill in titled:
         by_name[skill] = max(by_name.get(skill, 0), 100.0)
 
+    by_name = {
+        skill: pct
+        for skill, pct in by_name.items()
+        if skill not in _MINOR_REQUIREMENTS
+    }
+
     if not by_name:
-        # Generic baseline if nothing matched
+        # Generic baseline if nothing matched (major technical skills only)
         by_name = {
-            "Git": 80,
-            "Communication": 60,
-            "Problem Solving": 70,
-            "Data Structures": 55,
+            "Data Structures": 70,
+            "Algorithms": 65,
+            "System Design": 55,
+            "SQL": 50,
         }
 
     ordered = sorted(by_name.items(), key=lambda x: (-x[1], x[0]))

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type MouseEvent,
+} from 'react'
 import {
   type InsightsResponse,
   type StoredCv,
@@ -11,22 +18,60 @@ import {
   suggestRoles,
 } from '@/lib/api'
 import { InsightsPanel } from '@/components/InsightsPanel'
+import { TodoPage } from '@/components/TodoPage'
 import { Typeahead } from '@/components/Typeahead'
+import {
+  clearCvFile,
+  loadCvFile,
+  loadCvMeta,
+  saveCvFile,
+  saveCvMeta,
+} from '@/lib/cvStore'
+import { todoOpenCount, todoProgress, type TodoProgress } from '@/lib/todoStore'
+
+const STORAGE_KEY = 'jobify.ui.v1'
+
+type PersistedUi = {
+  page?: 'home' | 'todo'
+  query?: string
+  cvText?: string
+  cvAllSkills?: string[]
+  hasCvInput?: boolean
+  insights?: InsightsResponse | null
+}
+
+function loadPersisted(): PersistedUi {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return {}
+    return JSON.parse(raw) as PersistedUi
+  } catch {
+    return {}
+  }
+}
 
 export default function App() {
-  const [query, setQuery] = useState('')
-  const [cvText, setCvText] = useState('')
+  const saved = useRef(loadPersisted()).current
+  const [page, setPage] = useState<'home' | 'todo'>(saved.page === 'todo' ? 'todo' : 'home')
+  const [query, setQuery] = useState(saved.query ?? '')
+  const [cvText, setCvText] = useState(saved.cvText ?? '')
   /** Full skill list from the last CV upload — re-filtered whenever role changes. */
-  const [cvAllSkills, setCvAllSkills] = useState<string[]>([])
-  const [storedCv, setStoredCv] = useState<StoredCv | null>(null)
+  const [cvAllSkills, setCvAllSkills] = useState<string[]>(saved.cvAllSkills ?? [])
+  const [storedCv, setStoredCv] = useState<StoredCv | null>(() => loadCvMeta())
   const [cvParsing, setCvParsing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [insights, setInsights] = useState<InsightsResponse | null>(null)
-  const [hasCvInput, setHasCvInput] = useState(false)
+  const [insights, setInsights] = useState<InsightsResponse | null>(saved.insights ?? null)
+  const [hasCvInput, setHasCvInput] = useState(Boolean(saved.hasCvInput))
+  const [todoCount, setTodoCount] = useState(() => todoOpenCount())
+  const [todoState, setTodoState] = useState<TodoProgress>(() => todoProgress())
   const [resultKey, setResultKey] = useState(0)
+  const [hydrated, setHydrated] = useState(false)
   const roleFilterSeq = useRef(0)
+  const skipNextRoleFilter = useRef(Boolean(saved.cvText))
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const abortRef = useRef<AbortController | null>(null)
+  const localCvUrlRef = useRef<string | null>(null)
 
   const loadRoles = useCallback((q: string) => suggestRoles(q), [])
 
@@ -41,28 +86,107 @@ export default function App() {
     )
   }
 
-  // Restore CV from session cookie on load.
+  // Persist UI state across refresh.
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    const sync = () => {
+      setTodoCount(todoOpenCount())
+      setTodoState(todoProgress())
+    }
+    sync()
+    window.addEventListener('jobify-todo-changed', sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener('jobify-todo-changed', sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated) return
+    const payload: PersistedUi = {
+      page,
+      query,
+      cvText,
+      cvAllSkills,
+      hasCvInput,
+      insights,
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+    } catch {
+      // Quota / private mode — ignore.
+    }
+  }, [page, query, cvText, cvAllSkills, hasCvInput, insights, hydrated])
+
+  useEffect(() => {
+    saveCvMeta(storedCv)
+  }, [storedCv])
+
+  // Restore CV across refresh: local meta/file first, then re-bind server session.
   useEffect(() => {
     let cancelled = false
     void (async () => {
+      const localMeta = loadCvMeta()
+      if (localMeta && !cancelled) {
+        setStoredCv(localMeta)
+        if ((localMeta.all_skills ?? []).length > 0) {
+          setCvAllSkills((prev) => (prev.length > 0 ? prev : localMeta.all_skills ?? []))
+        }
+      }
+
       try {
-        const cv = await fetchCurrentCv()
-        if (cancelled || !cv) return
-        setStoredCv(cv)
-        setCvAllSkills(cv.all_skills ?? [])
+        const remote = await fetchCurrentCv()
+        if (cancelled) return
+        if (remote) {
+          setStoredCv(remote)
+          saveCvMeta(remote)
+          if ((remote.all_skills ?? []).length > 0) {
+            setCvAllSkills((prev) => (prev.length > 0 ? prev : remote.all_skills ?? []))
+          }
+          return
+        }
       } catch {
-        // Session may be empty — ignore.
+        // Fall through to local re-upload.
+      }
+
+      // Server session lost — re-upload local file so download / session stay valid.
+      const file = await loadCvFile()
+      if (cancelled || !file) return
+      try {
+        const role = query.trim()
+        const { all_skills, cv } = await parseCv(file, role)
+        if (cancelled) return
+        if (cv) {
+          setStoredCv(cv)
+          saveCvMeta(cv)
+        }
+        if (all_skills.length > 0) {
+          setCvAllSkills((prev) => (prev.length > 0 ? prev : all_skills))
+        }
+      } catch {
+        // Keep local meta so the UI still shows the uploaded CV.
       }
     })()
     return () => {
       cancelled = true
     }
+    // Only on mount — query used for optional re-filter at restore time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // When role changes and we have a CV skill bank, refresh the skills field.
   useEffect(() => {
     const role = query.trim()
     if (!role || cvAllSkills.length === 0) return
+    // Don't overwrite restored textarea on first mount after refresh.
+    if (skipNextRoleFilter.current) {
+      skipNextRoleFilter.current = false
+      return
+    }
 
     const seq = ++roleFilterSeq.current
     let cancelled = false
@@ -90,22 +214,37 @@ export default function App() {
     }
   }, [query, cvAllSkills])
 
+  function cancelSearch() {
+    abortRef.current?.abort()
+    abortRef.current = null
+    setLoading(false)
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
     setLoading(true)
     setError(null)
     try {
       const skills = skillsFromTextarea(cvText)
-      const data = await fetchInsights({
-        query,
-        cv_skills: skills,
-      })
+      const data = await fetchInsights(
+        { query, cv_skills: skills },
+        { signal: controller.signal },
+      )
+      if (controller.signal.aborted) return
       setHasCvInput(skills.length > 0)
       setInsights(data)
       setResultKey((k) => k + 1)
     } catch (err) {
+      if (controller.signal.aborted || (err instanceof DOMException && err.name === 'AbortError')) {
+        setError(null)
+        return
+      }
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
+      if (abortRef.current === controller) abortRef.current = null
       setLoading(false)
     }
   }
@@ -115,11 +254,25 @@ export default function App() {
     setError(null)
     setCvParsing(true)
     try {
+      await saveCvFile(file)
       const role = query.trim()
-      // Role is optional on upload — skills field fills once a role is chosen.
       const { skills, all_skills, cv } = await parseCv(file, role)
       setCvAllSkills(all_skills)
-      if (cv) setStoredCv(cv)
+      if (cv) {
+        setStoredCv(cv)
+        saveCvMeta(cv)
+      } else {
+        const meta: StoredCv = {
+          id: `local-${Date.now()}`,
+          filename: file.name,
+          content_type: file.type || 'application/octet-stream',
+          uploaded_at: new Date().toISOString(),
+          download_url: '/api/cv/download',
+          all_skills,
+        }
+        setStoredCv(meta)
+        saveCvMeta(meta)
+      }
 
       if (!role) {
         setCvText('')
@@ -148,24 +301,70 @@ export default function App() {
     } catch {
       // Still clear local state.
     }
+    await clearCvFile()
+    if (localCvUrlRef.current) {
+      URL.revokeObjectURL(localCvUrlRef.current)
+      localCvUrlRef.current = null
+    }
     setStoredCv(null)
     setCvAllSkills([])
     setCvText('')
+    setHasCvInput(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  async function onDownloadCv(e: MouseEvent<HTMLAnchorElement>) {
+    // Prefer server download; if session is gone, fall back to local IndexedDB file.
+    try {
+      const remote = await fetchCurrentCv()
+      if (remote) return
+    } catch {
+      // use local
+    }
+    e.preventDefault()
+    const file = await loadCvFile()
+    if (!file) return
+    if (localCvUrlRef.current) URL.revokeObjectURL(localCvUrlRef.current)
+    const url = URL.createObjectURL(file)
+    localCvUrlRef.current = url
+    const a = document.createElement('a')
+    a.href = url
+    a.download = file.name
+    a.click()
+  }
+
+  if (page === 'todo') {
+    return <TodoPage onBack={() => setPage('home')} />
   }
 
   return (
     <main className="relative z-10 mx-auto min-h-screen max-w-5xl px-5 pb-20 pt-10 sm:px-8">
-      <header className="mb-12 flex items-baseline justify-between gap-4">
-        <p className="text-xl font-semibold tracking-tight text-[var(--ink)]">Jobify</p>
-        <p className="hidden text-sm text-[var(--muted)] sm:block">
-          Role requirements and what to learn next
-        </p>
+      <header className="mb-12 flex flex-wrap items-baseline justify-between gap-4">
+        <p className="text-xl font-semibold tracking-tight text-[var(--brand)]">Jobify</p>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setPage('todo')}
+            className={`btn btn-nav btn-nav--${todoState}`}
+          >
+            <span aria-hidden className="mr-1.5">
+              {todoState === 'all'
+                ? '🥳'
+                : todoState === 'partial'
+                  ? '📚'
+                  : todoState === 'none'
+                    ? '😑'
+                    : '📭'}
+            </span>
+            Learning TODO
+            {todoCount > 0 ? <span className="btn-nav-count">{todoCount}</span> : null}
+          </button>
+        </div>
       </header>
 
-      <section className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-6 py-9 sm:px-9 sm:py-11">
-        <h1 className="max-w-xl text-3xl font-semibold leading-tight tracking-tight text-[var(--ink)] sm:text-4xl">
-          See what a role needs — and what to learn next.
+      <section className="rounded-lg border border-[var(--line)] bg-[var(--surface)] px-6 py-9 shadow-[var(--shadow-section)] sm:px-9 sm:py-11">
+        <h1 className="max-w-xl text-3xl font-semibold leading-tight tracking-tight text-[var(--title)] sm:text-4xl">
+          See what a role needs — and what to learn next
         </h1>
         <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--muted)] sm:text-base">
           Pick a position and your skills. We look up books, courses, and
@@ -182,14 +381,26 @@ export default function App() {
               placeholder="e.g. Software Engineer"
               required
             />
-            <div className="flex items-end">
+            <div className="flex items-end gap-2">
               <button
                 type="submit"
                 disabled={loading || !query.trim()}
-                className="w-full rounded-xl bg-[var(--ink)] px-5 py-2.5 text-[15px] font-medium text-white transition hover:opacity-90 disabled:opacity-50 sm:w-auto"
+                className="btn btn-primary w-full sm:w-auto"
               >
-                {loading ? 'Analyzing…' : 'Get insights'}
+                {loading ? (
+                  <>
+                    <span className="spinner" aria-hidden />
+                    Searching…
+                  </>
+                ) : (
+                  'Start learning'
+                )}
               </button>
+              {loading && (
+                <button type="button" onClick={cancelSearch} className="btn btn-ghost">
+                  Cancel
+                </button>
+              )}
             </div>
           </div>
 
@@ -211,8 +422,8 @@ export default function App() {
                 placeholder={
                   cvParsing ? 'Reading skills from CV…' : 'Python, Docker, SQL…'
                 }
-                disabled={cvParsing}
-                className="w-full resize-y rounded-xl border border-[var(--line)] bg-white px-3.5 py-2.5 text-[15px] text-[var(--ink)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] disabled:opacity-60"
+                disabled={cvParsing || loading}
+                className="w-full resize-y rounded-md border border-[var(--line)] bg-white px-3.5 py-2.5 text-[15px] text-[var(--ink)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] disabled:opacity-60"
               />
               {cvAllSkills.length > 0 && (
                 <p className="mt-1.5 text-xs text-[var(--muted)]">
@@ -224,32 +435,32 @@ export default function App() {
               <span className="mb-1.5 block text-sm text-[var(--muted)]">
                 CV (PDF / TXT)
               </span>
-              <div className="flex min-h-[5.5rem] flex-col justify-center gap-2 rounded-xl border border-dashed border-[var(--line)] bg-[var(--surface-soft)] px-4 py-3">
+              <div className="flex min-h-[5.5rem] flex-col justify-center gap-2 rounded-md border border-dashed border-[var(--line)] bg-[var(--surface-soft)] px-4 py-3">
                 {storedCv ? (
                   <>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <a
                         href={cvDownloadUrl()}
-                        className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 hover:decoration-[var(--accent)]"
+                        onClick={(e) => void onDownloadCv(e)}
+                        className="font-medium text-[var(--link)] underline decoration-[var(--link-underline)] underline-offset-4 hover:decoration-[var(--accent)]"
                       >
                         {storedCv.filename}
                       </a>
-                      <span className="text-xs text-[var(--muted)]">Saved in this session</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
-                        disabled={cvParsing}
+                        disabled={cvParsing || loading}
                         onClick={() => fileInputRef.current?.click()}
-                        className="rounded-lg bg-[var(--ink)] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+                        className="btn btn-primary-sm"
                       >
                         Replace
                       </button>
                       <button
                         type="button"
-                        disabled={cvParsing}
+                        disabled={cvParsing || loading}
                         onClick={() => void onRemoveCv()}
-                        className="rounded-lg border border-[var(--line)] bg-white px-3 py-1.5 text-sm text-[var(--muted)] disabled:opacity-60"
+                        className="btn btn-ghost-sm"
                       >
                         Remove
                       </button>
@@ -263,9 +474,9 @@ export default function App() {
                 {!storedCv && (
                   <button
                     type="button"
-                    disabled={cvParsing}
+                    disabled={cvParsing || loading}
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-fit rounded-lg bg-[var(--ink)] px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+                    className="btn btn-primary-sm w-fit"
                   >
                     Upload CV
                   </button>
@@ -274,7 +485,7 @@ export default function App() {
                   ref={fileInputRef}
                   type="file"
                   accept=".pdf,.txt,application/pdf,text/plain"
-                  disabled={cvParsing}
+                  disabled={cvParsing || loading}
                   className="sr-only"
                   onChange={(e) => {
                     void onCvUpload(e.target.files?.[0] ?? null)
@@ -298,14 +509,21 @@ export default function App() {
           </div>
         </form>
 
+        {loading && (
+          <div className="mt-4 flex items-center gap-3 rounded-md border border-[var(--accent-soft)] bg-[var(--accent-soft)]/40 px-4 py-3 text-sm text-[var(--accent)]">
+            <span className="spinner spinner--accent" aria-hidden />
+            Finding trusted books, courses, and a study plan…
+          </div>
+        )}
+
         {error && (
-          <p className="mt-4 rounded-xl bg-[#f8eee6] px-4 py-3 text-sm text-[var(--warn)]">
+          <p className="mt-4 rounded-md bg-[#f8eee6] px-4 py-3 text-sm text-[var(--warn)]">
             {error}
           </p>
         )}
       </section>
 
-      {insights && (
+      {insights && !loading && (
         <div key={resultKey} className="animate-fade mt-12">
           <InsightsPanel data={insights} showCvGaps={hasCvInput} />
         </div>

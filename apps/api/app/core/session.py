@@ -18,13 +18,14 @@ def ensure_session_id(request: Request, response: Response) -> str:
     if sid:
         return sid
     sid = uuid.uuid4().hex
-    # SameSite=none + Secure for cross-site HTTPS (e.g. split UI/API hosts).
+    # Lax works for same-site local http; Secure+None needed only for cross-site HTTPS.
+    secure = request.url.scheme == "https"
     response.set_cookie(
         key=SESSION_COOKIE,
         value=sid,
         httponly=True,
-        samesite="none",
-        secure=True,
+        samesite="none" if secure else "lax",
+        secure=secure,
         max_age=SESSION_MAX_AGE,
         path="/",
     )

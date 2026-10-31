@@ -71,7 +71,7 @@ export default function HomePage() {
 
       <section className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-6 py-9 sm:px-9 sm:py-11">
         <h1 className="max-w-xl text-3xl font-semibold leading-tight tracking-tight text-[var(--ink)] sm:text-4xl">
-          See what a role needs — and what to learn next.
+          See what a role needs — and what to learn next
         </h1>
         <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--muted)] sm:text-base">
           Pick a position to get typical requirements, then books, courses, and a

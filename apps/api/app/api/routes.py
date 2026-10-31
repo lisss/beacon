@@ -13,13 +13,21 @@ from app.models.schemas import (
     HealthResponse,
     InsightsRequest,
     InsightsResponse,
+    ResourceFeedbackRequest,
     SkillStat,
     SkillsForRoleRequest,
 )
 from app.services.cv import extract_skills_from_cv_text, extract_text_from_pdf
+from app.services.feedback import (
+    delete_feedback,
+    feedback_public,
+    irrelevant_urls,
+    list_by_verdict,
+    upsert_feedback,
+)
 from app.services.jobs import suggest_locations
 from app.services.roles import requirements_for_role, suggest_role_titles
-from app.services.resources import build_roadmap, gather_online_resources
+from app.services.resources import build_curriculum, build_roadmap, gather_online_resources
 from app.services.skills import (
     canonicalize_cv_skill,
     classify_cv_against_requirements,
@@ -70,7 +78,11 @@ def location_suggestions(q: str = "", limit: int = 40, session: Session = Depend
 
 
 @router.post("/insights", response_model=InsightsResponse)
-def insights(body: InsightsRequest) -> InsightsResponse:
+def insights(
+    request: Request,
+    body: InsightsRequest,
+    db: Session = Depends(get_session),
+) -> InsightsResponse:
     """Role requirements + live online learning materials for role + skills."""
     reqs = requirements_for_role(body.query)
     top = [(skill, 1, pct) for skill, pct in reqs]
@@ -79,8 +91,20 @@ def insights(body: InsightsRequest) -> InsightsResponse:
     gaps = missing_skills(top, body.cv_skills, min_percentage=0.0)
     gap_names = [skill for skill, _, _ in gaps]
 
-    bundle = gather_online_resources(body.query, stack, gap_names)
-    roadmap, study_hours = build_roadmap(body.query, top, body.cv_skills, bundle=bundle)
+    sid = get_session_id(request)
+    blocked = irrelevant_urls(db, sid)
+
+    bundle = gather_online_resources(
+        body.query, stack, gap_names, blocked_urls=blocked
+    )
+    roadmap_all, study_hours = build_roadmap(
+        body.query, top, body.cv_skills, bundle=bundle
+    )
+    curriculum_all = build_curriculum(body.query, bundle, roadmap_all)
+
+    # UI shows 5 immediately; "explore more" reveals the next 10.
+    roadmap, roadmap_more = roadmap_all[:5], roadmap_all[5:15]
+    curriculum, curriculum_more = curriculum_all[:5], curriculum_all[5:15]
 
     return InsightsResponse(
         query=body.query,
@@ -95,8 +119,64 @@ def insights(body: InsightsRequest) -> InsightsResponse:
         courses=bundle["courses"],
         certifications=bundle["certifications"],
         roadmap=roadmap,
+        curriculum=curriculum,
+        roadmap_more=roadmap_more,
+        curriculum_more=curriculum_more,
         estimated_study_hours=study_hours,
     )
+
+
+@router.post("/resources/feedback")
+def resource_feedback(
+    request: Request,
+    response: Response,
+    body: ResourceFeedbackRequest,
+    db: Session = Depends(get_session),
+) -> dict:
+    sid = ensure_session_id(request, response)
+    try:
+        row = upsert_feedback(
+            db,
+            session_id=sid,
+            url=body.url,
+            title=body.title,
+            provider=body.provider,
+            kind=body.kind,
+            verdict=body.verdict,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"ok": True, "item": feedback_public(row)}
+
+
+@router.delete("/resources/feedback")
+def remove_resource_feedback(
+    request: Request,
+    url: str,
+    db: Session = Depends(get_session),
+) -> dict:
+    sid = get_session_id(request)
+    if not sid:
+        return {"ok": True}
+    delete_feedback(db, sid, url)
+    return {"ok": True}
+
+
+@router.get("/resources/todo")
+def resources_todo(request: Request, db: Session = Depends(get_session)) -> dict:
+    sid = get_session_id(request)
+    if not sid:
+        return {"items": []}
+    rows = list_by_verdict(db, sid, "useful")
+    return {"items": [feedback_public(r) for r in rows]}
+
+
+@router.get("/resources/irrelevant")
+def resources_irrelevant(request: Request, db: Session = Depends(get_session)) -> dict:
+    sid = get_session_id(request)
+    if not sid:
+        return {"urls": []}
+    return {"urls": sorted(irrelevant_urls(db, sid))}
 
 
 @router.post("/cv/parse")

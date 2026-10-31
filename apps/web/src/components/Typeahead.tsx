@@ -120,13 +120,13 @@ export function Typeahead({
           setOpen(true)
         }}
         onKeyDown={onKeyDown}
-        className="w-full rounded-xl border border-[var(--line)] bg-white px-3.5 py-2.5 text-[15px] text-[var(--ink)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
+        className="w-full rounded-md border border-[var(--line)] bg-white px-3.5 py-2.5 text-[15px] text-[var(--ink)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
       />
       {open && (items.length > 0 || loading) && (
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-30 mt-1.5 max-h-80 w-full overflow-auto rounded-xl border border-[var(--line)] bg-white py-1 shadow-[0_12px_32px_rgba(15,23,22,0.08)]"
+          className="absolute z-30 mt-1.5 max-h-80 w-full overflow-auto rounded-md border border-[var(--line)] bg-white py-1 shadow-[var(--shadow-section)]"
         >
           {loading && items.length === 0 && (
             <li className="px-3.5 py-2 text-sm text-[var(--muted)]">Searching…</li>
