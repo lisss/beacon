@@ -21,6 +21,11 @@
   --link-underline: rgba(26, 95, 158, 0.35);
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --shadow-section: 0 8px 24px rgba(15, 23, 22, 0.06);
+  --radius-section: 0.5rem;
+  --panel-pad-y: 1.25rem;
+  --panel-pad-x: 1.25rem;
+  --panel-pad-y-sm: 1.35rem;
+  --panel-pad-x-sm: 1.75rem;
   --todo-empty: #e8ecea;
   --todo-none: #f3ddd8;
   --todo-partial: #f2ebcf;
@@ -132,6 +137,120 @@ button.logo:hover {
 .section-title--soft .section-icon {
   color: var(--title-soft);
   opacity: 0.9;
+}
+
+/* ——— Shared panel chrome (sections, cards, banners) ——— */
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-section);
+  background: var(--surface);
+  box-shadow: var(--shadow-section);
+}
+
+.panel--padded {
+  padding: var(--panel-pad-y) var(--panel-pad-x);
+}
+
+@media (min-width: 640px) {
+  .panel--padded {
+    padding: var(--panel-pad-y-sm) var(--panel-pad-x-sm);
+  }
+}
+
+.collapse-section {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-section);
+  background: var(--surface);
+  box-shadow: var(--shadow-section);
+  padding: var(--panel-pad-y) var(--panel-pad-x);
+}
+
+@media (min-width: 640px) {
+  .collapse-section {
+    padding: var(--panel-pad-y-sm) var(--panel-pad-x-sm);
+  }
+}
+
+.collapse-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.collapse-header-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.collapse-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--title);
+  line-height: 1.25;
+}
+
+@media (min-width: 640px) {
+  .collapse-title {
+    font-size: 1.4rem;
+  }
+}
+
+.collapse-chevron {
+  font-size: 0.85em;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.collapse-meta {
+  font-size: 0.875rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.collapse-summary {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.collapse-body {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.collapse-header:hover .collapse-chevron {
+  color: var(--logo);
+}
+
+/* Info card above insights — same chrome as sections */
+.insights-banner {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-section);
+  background: var(--surface);
+  box-shadow: var(--shadow-section);
+  padding: var(--panel-pad-y) var(--panel-pad-x);
+}
+
+@media (min-width: 640px) {
+  .insights-banner {
+    padding: var(--panel-pad-y-sm) var(--panel-pad-x-sm);
+  }
 }
 
 /* ——— Buttons ——— */
@@ -406,15 +525,6 @@ button.logo:hover {
 
 .coverage-label[data-status="missing"] {
   color: var(--missing);
-}
-
-/* ——— Shared panels ——— */
-
-.panel {
-  border-radius: 0.5rem;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  box-shadow: var(--shadow-section);
 }
 
 .spinner {

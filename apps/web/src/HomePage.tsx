@@ -342,7 +342,7 @@ export function HomePage() {
         </Link>
       </header>
 
-      <section className="rounded-lg border border-[var(--line)] bg-[var(--surface)] px-6 py-9 shadow-[var(--shadow-section)] sm:px-9 sm:py-11">
+      <section className="panel px-6 py-9 sm:px-9 sm:py-11">
         <h1 className="max-w-xl text-3xl font-semibold leading-tight tracking-tight text-[var(--title)] sm:text-4xl">
           See what a role needs — and what to learn next
         </h1>

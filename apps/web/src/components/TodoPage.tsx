@@ -80,7 +80,7 @@ export function TodoPage() {
       )}
 
       {!loading && items.length === 0 && (
-        <p className="rounded-lg border border-[var(--line)] bg-white px-6 py-8 text-sm text-[var(--muted)] shadow-[var(--shadow-section)]">
+        <p className="panel px-6 py-8 text-sm text-[var(--muted)]">
           No saved materials yet. On insights results, click <strong>'Save'</strong> to add
           something here.
         </p>
@@ -130,7 +130,7 @@ function TodoRow({
   onToggleDone: () => void
 }) {
   return (
-    <li className="rounded-lg border border-[var(--line)] bg-white px-5 py-4 shadow-[var(--shadow-section)]">
+    <li className="panel px-5 py-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">

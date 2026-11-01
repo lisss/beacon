@@ -5,33 +5,9 @@ import {
   type ResourceReview,
   markResourceFeedback,
 } from '@/lib/api'
-import { SectionIcon, type SectionIconName } from '@/components/SectionIcons'
+import { CollapsibleSection } from '@/components/CollapsibleSection'
+import { type SectionIconName } from '@/components/SectionIcons'
 import { removeTodoLocal, upsertTodoLocal } from '@/lib/todoStore'
-
-function SectionTitle({
-  children,
-  prominent = false,
-  icon,
-}: {
-  children: React.ReactNode
-  prominent?: boolean
-  icon?: SectionIconName
-}) {
-  if (prominent) {
-    return (
-      <h3 className="section-title text-2xl font-bold tracking-tight text-[var(--title)] sm:text-[1.65rem]">
-        {icon ? <SectionIcon name={icon} /> : null}
-        <span>{children}</span>
-      </h3>
-    )
-  }
-  return (
-    <h3 className="section-title section-title--soft text-lg font-semibold tracking-tight text-[var(--title-soft)]">
-      {icon ? <SectionIcon name={icon} /> : null}
-      <span>{children}</span>
-    </h3>
-  )
-}
 
 function ResourceLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -176,19 +152,19 @@ function Reviews({ reviews }: { reviews?: ResourceReview[] }) {
 }
 
 function ResourceList({
+  id,
   title,
   items,
   empty,
-  prominent = false,
   icon,
   hiddenUrls,
   onHide,
   initialLimit,
 }: {
+  id: string
   title: string
   items: Resource[]
   empty: string
-  prominent?: boolean
   icon?: SectionIconName
   hiddenUrls: Set<string>
   onHide: (url: string) => void
@@ -205,12 +181,14 @@ function ResourceList({
       ? Math.max(0, visible.length - initialLimit)
       : 0
 
+  const countLabel =
+    visible.length === 0
+      ? 'No matches yet'
+      : `${visible.length} recommendation${visible.length === 1 ? '' : 's'}`
+
   return (
-    <section>
-      <SectionTitle prominent={prominent} icon={icon}>
-        {title}
-      </SectionTitle>
-      <p className="mt-1 text-sm text-[var(--muted)]">
+    <CollapsibleSection id={id} title={title} icon={icon} summary={countLabel}>
+      <p className="text-sm text-[var(--muted)]">
         Trusted sources only · best matches first.
       </p>
       {visible.length === 0 ? (
@@ -263,7 +241,7 @@ function ResourceList({
           )}
         </>
       )}
-    </section>
+    </CollapsibleSection>
   )
 }
 
@@ -327,7 +305,7 @@ export function InsightsPanel({
       </div>
 
       {showCvGaps && stackSkills.length > 0 && (
-        <div className="rounded-lg border border-[var(--line)] bg-white px-5 py-4 shadow-[var(--shadow-section)] sm:px-6">
+        <div className="insights-banner">
           <p className="text-sm text-[var(--ink)]">
             Learning path personalized for:{' '}
             <span className="font-medium text-[var(--accent)]">{stackSkills.join(', ')}</span>
@@ -339,11 +317,13 @@ export function InsightsPanel({
       )}
 
       <div className={`grid gap-8 ${showCvGaps ? 'lg:grid-cols-2' : ''}`}>
-        <section>
-          <SectionTitle prominent icon="requirements">
-            Role requirements
-          </SectionTitle>
-          <ul className="mt-4 space-y-3">
+        <CollapsibleSection
+          id="requirements"
+          title="Role requirements"
+          icon="requirements"
+          summary={`${data.requirements.length} skills · ranked by importance`}
+        >
+          <ul className="space-y-3">
             {data.requirements.map((skill) => {
               const status = coverageOf(skill.skill)
               const pct = `${(skill.percentage / maxImportance) * 100}%`
@@ -371,17 +351,25 @@ export function InsightsPanel({
               )
             })}
           </ul>
-        </section>
+        </CollapsibleSection>
 
         {showCvGaps && (
-          <section>
-            <SectionTitle icon="gaps">Still to learn for this role</SectionTitle>
+          <CollapsibleSection
+            id="gaps"
+            title="Still to learn for this role"
+            icon="gaps"
+            summary={
+              data.missing_skills.length === 0
+                ? 'No major gaps'
+                : `${data.missing_skills.length} skill${data.missing_skills.length === 1 ? '' : 's'} to cover`
+            }
+          >
             {data.missing_skills.length === 0 ? (
-              <p className="mt-3 text-sm text-[var(--muted)]">
+              <p className="text-sm text-[var(--muted)]">
                 No major role gaps — focus on deepening your stack below.
               </p>
             ) : (
-              <ul className="mt-4 flex flex-wrap gap-2">
+              <ul className="flex flex-wrap gap-2">
                 {data.missing_skills.map((skill) => (
                   <li
                     key={skill.skill}
@@ -393,21 +381,19 @@ export function InsightsPanel({
                 ))}
               </ul>
             )}
-          </section>
+          </CollapsibleSection>
         )}
       </div>
 
       {curriculum.length > 0 && (
-        <section className="rounded-lg border border-[var(--line)] bg-white px-6 py-7 shadow-[var(--shadow-section)] sm:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <SectionTitle prominent icon="curriculum">
-              Brief curriculum
-            </SectionTitle>
-            <p className="text-sm text-[var(--muted)]">
-              ~{data.estimated_study_hours}h total plan
-            </p>
-          </div>
-          <p className="mt-2 text-sm text-[var(--muted)]">
+        <CollapsibleSection
+          id="curriculum"
+          title="Brief curriculum"
+          icon="curriculum"
+          meta={`~${data.estimated_study_hours}h total plan`}
+          summary={`${curriculum.length} phase${curriculum.length === 1 ? '' : 's'} · expand to see the plan`}
+        >
+          <p className="text-sm text-[var(--muted)]">
             How to structure learning through the top trusted resources — time boxes and focus
             order.
           </p>
@@ -444,19 +430,17 @@ export function InsightsPanel({
               Want to explore more? (+{Math.min(curriculumExtra, 10)} phases)
             </button>
           )}
-        </section>
+        </CollapsibleSection>
       )}
 
-      <section className="rounded-lg border border-[var(--line)] bg-white px-6 py-7 shadow-[var(--shadow-section)] sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <SectionTitle prominent icon="roadmap">
-            Learning roadmap
-          </SectionTitle>
-          <p className="text-sm text-[var(--muted)]">
-            ~{data.estimated_study_hours} hours estimated
-          </p>
-        </div>
-        <p className="mt-2 text-sm text-[var(--muted)]">
+      <CollapsibleSection
+        id="roadmap"
+        title="Learning roadmap"
+        icon="roadmap"
+        meta={`~${data.estimated_study_hours}h estimated`}
+        summary={`${roadmap.length} step${roadmap.length === 1 ? '' : 's'} · expand to follow the path`}
+      >
+        <p className="text-sm text-[var(--muted)]">
           {showCvGaps
             ? 'Starts from your skills, then covers role gaps.'
             : 'Based on typical requirements for this role.'}
@@ -512,30 +496,31 @@ export function InsightsPanel({
             Want to explore more? (+{Math.min(roadmapExtra, 10)} steps)
           </button>
         )}
-      </section>
+      </CollapsibleSection>
 
       <div className="grid gap-10 md:grid-cols-2">
         <ResourceList
+          id="books"
           title="Books"
           items={data.books}
           empty="No trusted books matched this role and skill mix yet."
-          prominent
           icon="books"
           initialLimit={5}
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
         <ResourceList
+          id="courses"
           title="Courses"
           items={data.courses}
           empty="No trusted courses matched this role and skill mix yet."
-          prominent
           icon="courses"
           initialLimit={5}
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
         <ResourceList
+          id="certifications"
           title="Certifications"
           items={data.certifications}
           empty="No trusted certifications matched this role and skill mix."
@@ -544,6 +529,7 @@ export function InsightsPanel({
           onHide={hideUrl}
         />
         <ResourceList
+          id="interview"
           title="Interview questions"
           items={data.interview_questions}
           empty="No interview prompts yet."
