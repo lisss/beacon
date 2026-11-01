@@ -5,23 +5,32 @@ import {
   type ResourceReview,
   markResourceFeedback,
 } from '@/lib/api'
+import { SectionIcon, type SectionIconName } from '@/components/SectionIcons'
 import { removeTodoLocal, upsertTodoLocal } from '@/lib/todoStore'
 
 function SectionTitle({
   children,
   prominent = false,
+  icon,
 }: {
   children: React.ReactNode
   prominent?: boolean
+  icon?: SectionIconName
 }) {
   if (prominent) {
     return (
-      <h3 className="text-2xl font-bold tracking-tight text-[var(--title)] sm:text-[1.65rem]">
-        {children}
+      <h3 className="section-title text-2xl font-bold tracking-tight text-[var(--title)] sm:text-[1.65rem]">
+        {icon ? <SectionIcon name={icon} /> : null}
+        <span>{children}</span>
       </h3>
     )
   }
-  return <h3 className="text-lg font-semibold tracking-tight text-[var(--title-soft)]">{children}</h3>
+  return (
+    <h3 className="section-title section-title--soft text-lg font-semibold tracking-tight text-[var(--title-soft)]">
+      {icon ? <SectionIcon name={icon} /> : null}
+      <span>{children}</span>
+    </h3>
+  )
 }
 
 function ResourceLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -102,7 +111,7 @@ function FeedbackButtons({
   }
 
   if (saved === 'useful') {
-    return <p className="feedback-saved">Saved to Learning TODO</p>
+    return <p className="feedback-saved">Saved to Learning list</p>
   }
 
   return (
@@ -171,6 +180,7 @@ function ResourceList({
   items,
   empty,
   prominent = false,
+  icon,
   hiddenUrls,
   onHide,
   initialLimit,
@@ -179,6 +189,7 @@ function ResourceList({
   items: Resource[]
   empty: string
   prominent?: boolean
+  icon?: SectionIconName
   hiddenUrls: Set<string>
   onHide: (url: string) => void
   /** When set, show this many first; rest behind “Want to explore more?” */
@@ -196,7 +207,9 @@ function ResourceList({
 
   return (
     <section>
-      <SectionTitle prominent={prominent}>{title}</SectionTitle>
+      <SectionTitle prominent={prominent} icon={icon}>
+        {title}
+      </SectionTitle>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Trusted sources only · best matches first.
       </p>
@@ -327,7 +340,9 @@ export function InsightsPanel({
 
       <div className={`grid gap-8 ${showCvGaps ? 'lg:grid-cols-2' : ''}`}>
         <section>
-          <SectionTitle prominent>Role requirements</SectionTitle>
+          <SectionTitle prominent icon="requirements">
+            Role requirements
+          </SectionTitle>
           <ul className="mt-4 space-y-3">
             {data.requirements.map((skill) => {
               const status = coverageOf(skill.skill)
@@ -360,7 +375,7 @@ export function InsightsPanel({
 
         {showCvGaps && (
           <section>
-            <SectionTitle>Still to learn for this role</SectionTitle>
+            <SectionTitle icon="gaps">Still to learn for this role</SectionTitle>
             {data.missing_skills.length === 0 ? (
               <p className="mt-3 text-sm text-[var(--muted)]">
                 No major role gaps — focus on deepening your stack below.
@@ -385,7 +400,9 @@ export function InsightsPanel({
       {curriculum.length > 0 && (
         <section className="rounded-lg border border-[var(--line)] bg-white px-6 py-7 shadow-[var(--shadow-section)] sm:px-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <SectionTitle prominent>Brief curriculum</SectionTitle>
+            <SectionTitle prominent icon="curriculum">
+              Brief curriculum
+            </SectionTitle>
             <p className="text-sm text-[var(--muted)]">
               ~{data.estimated_study_hours}h total plan
             </p>
@@ -432,7 +449,9 @@ export function InsightsPanel({
 
       <section className="rounded-lg border border-[var(--line)] bg-white px-6 py-7 shadow-[var(--shadow-section)] sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <SectionTitle prominent>Learning roadmap</SectionTitle>
+          <SectionTitle prominent icon="roadmap">
+            Learning roadmap
+          </SectionTitle>
           <p className="text-sm text-[var(--muted)]">
             ~{data.estimated_study_hours} hours estimated
           </p>
@@ -501,6 +520,7 @@ export function InsightsPanel({
           items={data.books}
           empty="No trusted books matched this role and skill mix yet."
           prominent
+          icon="books"
           initialLimit={5}
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
@@ -510,6 +530,7 @@ export function InsightsPanel({
           items={data.courses}
           empty="No trusted courses matched this role and skill mix yet."
           prominent
+          icon="courses"
           initialLimit={5}
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
@@ -518,6 +539,7 @@ export function InsightsPanel({
           title="Certifications"
           items={data.certifications}
           empty="No trusted certifications matched this role and skill mix."
+          icon="certifications"
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
@@ -525,6 +547,7 @@ export function InsightsPanel({
           title="Interview questions"
           items={data.interview_questions}
           empty="No interview prompts yet."
+          icon="interview"
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />

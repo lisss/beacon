@@ -114,6 +114,26 @@ button.logo:hover {
   color: var(--logo);
 }
 
+/* ——— Section icons ——— */
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.section-icon {
+  width: 1.35em;
+  height: 1.35em;
+  flex-shrink: 0;
+  color: var(--logo);
+}
+
+.section-title--soft .section-icon {
+  color: var(--title-soft);
+  opacity: 0.9;
+}
+
 /* ——— Buttons ——— */
 
 .btn {
@@ -179,42 +199,63 @@ button.logo:hover {
   color: var(--missing);
 }
 
-/* Learning TODO / back — plain clickable link, no background or border */
+/* Learning list / back — plain clickable link, no background or border */
 .todo-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.45rem;
   margin: 0;
   padding: 0;
   border: none;
   background: none;
   box-shadow: none;
-  font-size: 0.9375rem;
+  font-size: 1.125rem; /* 0.9375rem × 1.2 */
   font-weight: 600;
   line-height: 1.2;
   color: var(--ink);
-  text-decoration-color: color-mix(in srgb, var(--ink) 28%, transparent);
-  text-underline-offset: 0.2em;
-  text-decoration-thickness: 1.5px;
+  text-decoration: none;
   cursor: pointer;
-  transition: text-decoration-color 0.15s ease;
+  transition: color 0.15s ease, opacity 0.15s ease;
 }
 
 .todo-link:hover {
   background: none;
+  color: var(--ink);
+}
+
+.todo-link-mark {
+  width: 1.35em;
+  height: 1.35em;
+  flex-shrink: 0;
+  color: var(--ink);
+}
+
+.todo-link-label {
+  text-decoration-color: color-mix(in srgb, var(--ink) 28%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1.5px;
+}
+
+.todo-link:hover .todo-link-label {
   text-decoration-color: var(--ink);
 }
 
-.todo-link-icon {
-  font-size: 1.2em; /* 20% larger */
-  line-height: 1;
-}
-
 .todo-link-count {
-  margin-left: 0.2rem;
-  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.15rem;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 9999px;
+  background: #e8a09a;
+  color: #fff;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(28, 36, 34, 0.12);
 }
 
 .btn-explore {

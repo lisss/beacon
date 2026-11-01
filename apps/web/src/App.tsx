@@ -18,7 +18,7 @@ import {
   suggestRoles,
 } from '@/lib/api'
 import { InsightsPanel } from '@/components/InsightsPanel'
-import { Logo } from '@/components/Logo'
+import { Logo, PathJMark } from '@/components/Logo'
 import { TodoPage } from '@/components/TodoPage'
 import { Typeahead } from '@/components/Typeahead'
 import {
@@ -28,7 +28,7 @@ import {
   saveCvFile,
   saveCvMeta,
 } from '@/lib/cvStore'
-import { todoOpenCount, todoProgress, type TodoProgress } from '@/lib/todoStore'
+import { todoOpenCount } from '@/lib/todoStore'
 
 const STORAGE_KEY = 'jobify.ui.v1'
 
@@ -65,7 +65,6 @@ export default function App() {
   const [insights, setInsights] = useState<InsightsResponse | null>(saved.insights ?? null)
   const [hasCvInput, setHasCvInput] = useState(Boolean(saved.hasCvInput))
   const [todoCount, setTodoCount] = useState(() => todoOpenCount())
-  const [todoState, setTodoState] = useState<TodoProgress>(() => todoProgress())
   const [resultKey, setResultKey] = useState(0)
   const [hydrated, setHydrated] = useState(false)
   const roleFilterSeq = useRef(0)
@@ -93,10 +92,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const sync = () => {
-      setTodoCount(todoOpenCount())
-      setTodoState(todoProgress())
-    }
+    const sync = () => setTodoCount(todoOpenCount())
     sync()
     window.addEventListener('jobify-todo-changed', sync)
     window.addEventListener('storage', sync)
@@ -350,17 +346,13 @@ export default function App() {
             setPage('todo')
           }}
         >
-          <span aria-hidden className="todo-link-icon">
-            {todoState === 'all'
-              ? '🥳'
-              : todoState === 'partial'
-                ? '📚'
-                : todoState === 'none'
-                  ? '😑'
-                  : '📭'}
-          </span>
-          Learning TODO
-          {todoCount > 0 ? <span className="todo-link-count">{todoCount}</span> : null}
+          <PathJMark className="todo-link-mark" />
+          <span className="todo-link-label">Learning list</span>
+          {todoCount > 0 ? (
+            <span className="todo-link-count" aria-label={`${todoCount} open items`}>
+              {todoCount}
+            </span>
+          ) : null}
         </a>
       </header>
 
@@ -395,7 +387,7 @@ export default function App() {
                     Searching…
                   </>
                 ) : (
-                  'Start learning'
+                  'Plan your learning'
                 )}
               </button>
               {loading && (

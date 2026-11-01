@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Logo } from '@/components/Logo'
 import { fetchTodoList, removeResourceFeedback } from '@/lib/api'
 import {
   type TodoItem,
@@ -58,27 +57,23 @@ export function TodoPage({ onBack }: { onBack: () => void }) {
 
   return (
     <main className="relative z-10 mx-auto min-h-screen max-w-5xl px-5 pb-20 pt-10 sm:px-8">
-      <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <a
-            href="#insights"
-            className="todo-link"
-            onClick={(e) => {
-              e.preventDefault()
-              onBack()
-            }}
-          >
-            ← Back to insights
-          </a>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--title)]">
-            Learning TODO
-          </h1>
-          <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">
-            Materials you marked as useful. Work through these when you have a block of
-            time.
-          </p>
-        </div>
-        <Logo onClick={onBack} />
+      <header className="mb-10">
+        <a
+          href="#insights"
+          className="todo-link"
+          onClick={(e) => {
+            e.preventDefault()
+            onBack()
+          }}
+        >
+          ← Back to insights
+        </a>
+        <h1 className="mt-12 text-3xl font-semibold tracking-tight text-[var(--title)]">
+          Learning list
+        </h1>
+        <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">
+          Your saved study materials — work through these when you have a block of time.
+        </p>
       </header>
 
       {loading && items.length === 0 && (

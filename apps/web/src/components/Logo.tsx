@@ -4,35 +4,39 @@ type LogoProps = {
   onClick?: () => void
 }
 
+/** Path-J + gap-bridge mark only (for reuse next to links, etc.). */
+export function PathJMark({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      fill="none"
+      aria-hidden
+      className={className}
+    >
+      <g
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M14 20h5V16h5V12h5V8" />
+        <path d="M6 30h7" />
+        <path d="M27 30h7" />
+        <path d="M13 30c0-3.8 3.2-6.2 7-6.2s7 2.4 7 6.2" />
+      </g>
+    </svg>
+  )
+}
+
 /**
- * Path-J + gap-bridge mark.
- * Ascending steps = learning path; J-hook = bridge over a skill gap.
+ * Path-J + gap-bridge mark with wordmark.
  * Color via currentColor (shared with wordmark).
  */
 export function Logo({ className = '', title = 'Jobify', onClick }: LogoProps) {
   const inner = (
     <>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 40 40"
-        fill="none"
-        aria-hidden
-        className="logo-mark"
-      >
-        <g
-          stroke="currentColor"
-          strokeWidth="2.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {/* Ascending path steps (no hanging stem on the right) */}
-          <path d="M14 20h5V16h5V12h5V8" />
-          {/* Skill-gap stubs + upward bridge arch */}
-          <path d="M6 30h7" />
-          <path d="M27 30h7" />
-          <path d="M13 30c0-3.8 3.2-6.2 7-6.2s7 2.4 7 6.2" />
-        </g>
-      </svg>
+      <PathJMark className="logo-mark" />
       <span className="logo-wordmark">{title}</span>
     </>
   )
