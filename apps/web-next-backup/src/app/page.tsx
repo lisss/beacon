@@ -122,7 +122,7 @@ export default function HomePage() {
             </label>
             <label className="block">
               <span className="mb-1.5 block text-sm text-[var(--muted)]">
-                Or upload CV (PDF / TXT)
+                Or upload CV (PDF / TXT / DOC)
               </span>
               <div className="flex min-h-[5.5rem] items-center rounded-xl border border-dashed border-[var(--line)] bg-[var(--surface-soft)] px-4">
                 <input

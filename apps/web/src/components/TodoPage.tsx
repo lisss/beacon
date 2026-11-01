@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Logo } from '@/components/Logo'
 import { fetchTodoList, removeResourceFeedback } from '@/lib/api'
 import {
   type TodoItem,
@@ -57,11 +58,18 @@ export function TodoPage({ onBack }: { onBack: () => void }) {
 
   return (
     <main className="relative z-10 mx-auto min-h-screen max-w-5xl px-5 pb-20 pt-10 sm:px-8">
-      <header className="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+      <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <button type="button" onClick={onBack} className="btn btn-nav">
+          <a
+            href="#insights"
+            className="todo-link"
+            onClick={(e) => {
+              e.preventDefault()
+              onBack()
+            }}
+          >
             ← Back to insights
-          </button>
+          </a>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--title)]">
             Learning TODO
           </h1>
@@ -70,7 +78,7 @@ export function TodoPage({ onBack }: { onBack: () => void }) {
             time.
           </p>
         </div>
-        <p className="text-xl font-semibold tracking-tight text-[var(--brand)]">Jobify</p>
+        <Logo onClick={onBack} />
       </header>
 
       {loading && items.length === 0 && (

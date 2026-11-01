@@ -308,9 +308,8 @@ export function InsightsPanel({
   return (
     <div className="space-y-10">
       <div>
-        <p className="text-sm font-medium text-[var(--accent)]">Position</p>
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--title)] sm:text-3xl">
-          {data.query}
+          Position: {data.query}
         </h2>
       </div>
 
@@ -329,11 +328,6 @@ export function InsightsPanel({
       <div className={`grid gap-8 ${showCvGaps ? 'lg:grid-cols-2' : ''}`}>
         <section>
           <SectionTitle prominent>Role requirements</SectionTitle>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            {showCvGaps
-              ? 'Green = covered, yellow = related skill, red = still missing.'
-              : 'Typical skills for this position, ranked by importance.'}
-          </p>
           <ul className="mt-4 space-y-3">
             {data.requirements.map((skill) => {
               const status = coverageOf(skill.skill)

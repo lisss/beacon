@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" role="img" aria-label="Jobify">
+  <!-- Path steps + upward gap bridge -->
+  <g
+    stroke="#0c7a68"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M14 20h5V16h5V12h5V8" />
+    <path d="M6 30h7" />
+    <path d="M27 30h7" />
+    <path d="M13 30c0-3.8 3.2-6.2 7-6.2s7 2.4 7 6.2" />
+  </g>
+</svg>

@@ -18,6 +18,7 @@ import {
   suggestRoles,
 } from '@/lib/api'
 import { InsightsPanel } from '@/components/InsightsPanel'
+import { Logo } from '@/components/Logo'
 import { TodoPage } from '@/components/TodoPage'
 import { Typeahead } from '@/components/Typeahead'
 import {
@@ -339,27 +340,28 @@ export default function App() {
 
   return (
     <main className="relative z-10 mx-auto min-h-screen max-w-5xl px-5 pb-20 pt-10 sm:px-8">
-      <header className="mb-12 flex flex-wrap items-baseline justify-between gap-4">
-        <p className="text-xl font-semibold tracking-tight text-[var(--brand)]">Jobify</p>
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => setPage('todo')}
-            className={`btn btn-nav btn-nav--${todoState}`}
-          >
-            <span aria-hidden className="mr-1.5">
-              {todoState === 'all'
-                ? '🥳'
-                : todoState === 'partial'
-                  ? '📚'
-                  : todoState === 'none'
-                    ? '😑'
-                    : '📭'}
-            </span>
-            Learning TODO
-            {todoCount > 0 ? <span className="btn-nav-count">{todoCount}</span> : null}
-          </button>
-        </div>
+      <header className="mb-12 flex flex-wrap items-center justify-between gap-4">
+        <Logo />
+        <a
+          href="#learning-todo"
+          className="todo-link"
+          onClick={(e) => {
+            e.preventDefault()
+            setPage('todo')
+          }}
+        >
+          <span aria-hidden className="todo-link-icon">
+            {todoState === 'all'
+              ? '🥳'
+              : todoState === 'partial'
+                ? '📚'
+                : todoState === 'none'
+                  ? '😑'
+                  : '📭'}
+          </span>
+          Learning TODO
+          {todoCount > 0 ? <span className="todo-link-count">{todoCount}</span> : null}
+        </a>
       </header>
 
       <section className="rounded-lg border border-[var(--line)] bg-[var(--surface)] px-6 py-9 shadow-[var(--shadow-section)] sm:px-9 sm:py-11">
@@ -433,7 +435,7 @@ export default function App() {
             </label>
             <div className="block">
               <span className="mb-1.5 block text-sm text-[var(--muted)]">
-                CV (PDF / TXT)
+                CV (PDF / TXT / DOC)
               </span>
               <div className="flex min-h-[5.5rem] flex-col justify-center gap-2 rounded-md border border-dashed border-[var(--line)] bg-[var(--surface-soft)] px-4 py-3">
                 {storedCv ? (
