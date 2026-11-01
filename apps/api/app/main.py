@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
@@ -51,7 +52,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router, prefix("/api"))
+app.include_router(router, prefix="/api")
 
 
 @app.get("/api")
@@ -60,9 +61,22 @@ def api_root() -> dict:
 
 
 if STATIC_DIR.is_dir():
-    # Must be last: API routes above take priority.
-    # html=True serves index.html for unknown paths (SPA routes like /learning-list).
-    app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="spa")
+    assets_dir = STATIC_DIR / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @app.get("/")
+    def spa_index() -> FileResponse:
+        return FileResponse(STATIC_DIR / "index.html")
+
+    @app.get("/{full_path:path}")
+    def spa_fallback(full_path: str) -> FileResponse:
+        """Serve built files when present; otherwise index.html for client routes."""
+        candidate = (STATIC_DIR / full_path).resolve()
+        # Prevent path traversal outside STATIC_DIR.
+        if candidate.is_file() and str(candidate).startswith(str(STATIC_DIR.resolve())):
+            return FileResponse(candidate)
+        return FileResponse(STATIC_DIR / "index.html")
 else:
 
     @app.get("/")

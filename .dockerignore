@@ -1,4 +1,36 @@
-# Deploy
+.git
+.github
+.cursor
+.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+
+# Node / frontend build artifacts (rebuilt in Docker)
+apps/web/node_modules
+apps/web/dist
+apps/web-next-backup
+
+# Local DBs & uploads
+*.db
+**/jobify.db
+apps/api/uploads
+uploads
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Docs / misc
+**/*.md
+!README.md
+agent-transcripts
+.DS_Store
+
+# Deploy leftovers
 .vercel
 static/
 apps/api/static/
