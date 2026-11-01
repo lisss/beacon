@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { fetchTodoList, removeResourceFeedback } from '@/lib/api'
 import {
   type TodoItem,
@@ -8,7 +9,7 @@ import {
   removeTodoLocal,
 } from '@/lib/todoStore'
 
-export function TodoPage({ onBack }: { onBack: () => void }) {
+export function TodoPage() {
   const [items, setItems] = useState<TodoItem[]>(() => listTodoLocal())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,16 +59,9 @@ export function TodoPage({ onBack }: { onBack: () => void }) {
   return (
     <main className="relative z-10 mx-auto min-h-screen max-w-5xl px-5 pb-20 pt-10 sm:px-8">
       <header className="mb-10">
-        <a
-          href="#insights"
-          className="todo-link"
-          onClick={(e) => {
-            e.preventDefault()
-            onBack()
-          }}
-        >
+        <Link to="/" className="todo-link">
           ← Back to insights
-        </a>
+        </Link>
         <h1 className="mt-12 text-3xl font-semibold tracking-tight text-[var(--title)]">
           Learning list
         </h1>

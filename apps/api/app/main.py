@@ -51,7 +51,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router, prefix="/api")
+app.include_router(router, prefix("/api"))
 
 
 @app.get("/api")
@@ -61,6 +61,7 @@ def api_root() -> dict:
 
 if STATIC_DIR.is_dir():
     # Must be last: API routes above take priority.
+    # html=True serves index.html for unknown paths (SPA routes like /learning-list).
     app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="spa")
 else:
 
