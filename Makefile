@@ -1,5 +1,7 @@
 .PHONY: api web sync up down logs build ps restart
 
+# Production: see deploy/README.md (GHCR + free-tier EC2 + DuckDNS)
+
 # --- Local (no Docker) ---
 
 api:
