@@ -55,6 +55,7 @@ services:
       # SQLite keeps a t3.micro under ~1GB RAM; swap to Postgres later if you upgrade.
       DATABASE_URL: sqlite:////data/jobify.db
       API_CORS_ORIGINS: https://${DOMAIN},http://${DOMAIN}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://${DOMAIN}}
       REMOTIVE_ENABLED: ${REMOTIVE_ENABLED:-true}
       YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
       GOOGLE_BOOKS_API_KEY: ${GOOGLE_BOOKS_API_KEY:-}

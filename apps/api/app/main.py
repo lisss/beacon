@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
@@ -13,6 +13,12 @@ from app.models import cv_upload as _cv_upload  # noqa: F401 — register table
 from app.models import job as _job  # noqa: F401 — register table
 from app.models import resource_feedback as _resource_feedback  # noqa: F401
 from app.services.jobs import seed_sample_jobs
+from app.services.seo import (
+    build_robots_txt,
+    build_role_page_html,
+    build_sitemap_xml,
+    title_from_slug,
+)
 from sqlmodel import Session
 
 # Built Vite app (copied next to the API in Docker / Render builds).
@@ -58,6 +64,28 @@ app.include_router(router, prefix="/api")
 @app.get("/api")
 def api_root() -> dict:
     return {"name": "jobify-api", "docs": "/docs"}
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)
+def robots_txt() -> str:
+    return build_robots_txt(settings.site_url)
+
+
+@app.get("/sitemap.xml")
+def sitemap_xml() -> Response:
+    return Response(
+        content=build_sitemap_xml(settings.site_url),
+        media_type="application/xml",
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
+
+
+@app.get("/roles/{slug}", response_class=HTMLResponse)
+def role_seo_page(slug: str) -> str:
+    title = title_from_slug(slug)
+    if not title:
+        raise HTTPException(status_code=404, detail="Role not found")
+    return build_role_page_html(settings.site_url, title)
 
 
 def _spa_html() -> FileResponse:

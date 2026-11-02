@@ -1,7 +1,11 @@
+import { Link } from 'react-router-dom'
+
 type LogoProps = {
   className?: string
   title?: string
   onClick?: () => void
+  /** Use an h1 for the homepage brand (SEO). */
+  asHeading?: boolean
 }
 
 /** Path-J + gap-bridge mark only (for reuse next to links, etc.). */
@@ -33,7 +37,12 @@ export function PathJMark({ className = '' }: { className?: string }) {
  * Path-J + gap-bridge mark with wordmark.
  * Color via currentColor (shared with wordmark).
  */
-export function Logo({ className = '', title = 'Jobify', onClick }: LogoProps) {
+export function Logo({
+  className = '',
+  title = 'Jobify',
+  onClick,
+  asHeading = false,
+}: LogoProps) {
   const inner = (
     <>
       <PathJMark className="logo-mark" />
@@ -41,11 +50,13 @@ export function Logo({ className = '', title = 'Jobify', onClick }: LogoProps) {
     </>
   )
 
+  const classNames = `logo ${className}`.trim()
+
   if (onClick) {
     return (
       <button
         type="button"
-        className={`logo ${className}`.trim()}
+        className={classNames}
         aria-label={title}
         onClick={onClick}
       >
@@ -54,9 +65,15 @@ export function Logo({ className = '', title = 'Jobify', onClick }: LogoProps) {
     )
   }
 
-  return (
-    <span className={`logo ${className}`.trim()} aria-label={title}>
+  const link = (
+    <Link to="/" className={classNames} aria-label={title}>
       {inner}
-    </span>
+    </Link>
   )
+
+  if (asHeading) {
+    return <h1 className="logo-heading">{link}</h1>
+  }
+
+  return link
 }

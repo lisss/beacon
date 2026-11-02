@@ -6,7 +6,8 @@ import {
   type FormEvent,
   type MouseEvent,
 } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { setDocumentMeta } from '@/lib/documentMeta'
 import {
   type InsightsResponse,
   type StoredCv,
@@ -52,7 +53,9 @@ function loadPersisted(): PersistedUi {
 
 export function HomePage() {
   const saved = useRef(loadPersisted()).current
-  const [query, setQuery] = useState(saved.query ?? '')
+  const [searchParams] = useSearchParams()
+  const urlRole = (searchParams.get('q') || searchParams.get('role') || '').trim()
+  const [query, setQuery] = useState(urlRole || saved.query || '')
   const [cvText, setCvText] = useState(saved.cvText ?? '')
   /** Full skill list from the last CV upload — re-filtered whenever role changes. */
   const [cvAllSkills, setCvAllSkills] = useState<string[]>(saved.cvAllSkills ?? [])
@@ -70,6 +73,23 @@ export function HomePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const localCvUrlRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    setDocumentMeta({
+      title: 'Jobify — role requirements, skills gaps & learning paths',
+      description:
+        'See what a job role typically needs, compare it to your CV or skills, and get a study plan with books, courses, and interview prep.',
+      path: '/',
+    })
+  }, [])
+
+  useEffect(() => {
+    if (urlRole && urlRole !== query) {
+      setQuery(urlRole)
+    }
+    // Only sync when the URL role changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlRole])
 
   const loadRoles = useCallback((q: string) => suggestRoles(q), [])
 
@@ -330,7 +350,7 @@ export function HomePage() {
   return (
     <main className="relative z-10 mx-auto min-h-screen max-w-5xl px-5 pb-20 pt-10 sm:px-8">
       <header className="mb-12 flex flex-wrap items-center justify-between gap-4">
-        <Logo />
+        <Logo asHeading />
         <Link to="/learning-list" className="todo-link">
           <PathJMark className="todo-link-mark" />
           <span className="todo-link-label">Learning list</span>
@@ -343,9 +363,9 @@ export function HomePage() {
       </header>
 
       <section className="panel px-6 py-9 sm:px-9 sm:py-11">
-        <h2 className="whitespace-nowrap text-[clamp(0.95rem,2.9vw,1.75rem)] font-semibold tracking-tight text-[var(--brand)]">
+        <p className="whitespace-nowrap text-[clamp(0.95rem,2.9vw,1.75rem)] font-semibold tracking-tight text-[var(--brand)]">
           See what a role needs — and what to learn next
-        </h2>
+        </p>
         <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--muted)] sm:text-base">
           Pick a position and your skills. We look up books, courses, and
           interview material online for that mix.
@@ -508,6 +528,34 @@ export function HomePage() {
           <InsightsPanel data={insights} showCvGaps={hasCvInput} />
         </div>
       )}
+
+      <footer className="mt-16 border-t border-[var(--line)] pt-8 text-sm text-[var(--muted)]">
+        <p className="font-medium text-[var(--title-soft)]">Popular role guides</p>
+        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+          {[
+            ['software-engineer', 'Software Engineer'],
+            ['python-developer', 'Python Developer'],
+            ['frontend-engineer', 'Frontend Engineer'],
+            ['data-engineer', 'Data Engineer'],
+            ['devops-engineer', 'DevOps Engineer'],
+            ['ml-engineer', 'ML Engineer'],
+          ].map(([slug, label]) => (
+            <li key={slug}>
+              <a
+                href={`/roles/${slug}`}
+                className="text-[var(--link)] underline decoration-[var(--link-underline)] underline-offset-2 hover:text-[var(--accent)]"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 max-w-2xl leading-relaxed">
+          Jobify is a free career learning planner: compare job role requirements to your
+          skills or CV, then get books, courses, certifications, and interview prep in one
+          roadmap.
+        </p>
+      </footer>
     </main>
   )
 }

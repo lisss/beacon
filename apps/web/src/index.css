@@ -89,6 +89,13 @@ button:disabled,
 
 /* ——— Logo (Path-J + gap bridge) ——— */
 
+.logo-heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
 .logo {
   display: inline-flex;
   align-items: center;

@@ -17,10 +17,16 @@ class Settings(BaseSettings):
     youtube_api_key: str = ""
     google_books_api_key: str = ""
     github_token: str = ""
+    # Public origin for canonical URLs, sitemap, Open Graph (no trailing slash).
+    public_site_url: str = "https://pathjobify.duckdns.org"
 
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.api_cors_origins.split(",") if o.strip()]
+
+    @property
+    def site_url(self) -> str:
+        return self.public_site_url.rstrip("/")
 
     @property
     def is_sqlite(self) -> bool:

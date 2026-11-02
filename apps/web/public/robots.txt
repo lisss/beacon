@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /learning-list
+
+Sitemap: https://pathjobify.duckdns.org/sitemap.xml

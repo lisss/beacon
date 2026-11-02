@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchTodoList, removeResourceFeedback } from '@/lib/api'
+import { setDocumentMeta } from '@/lib/documentMeta'
 import {
   type TodoItem,
   listTodoLocal,
@@ -30,6 +31,14 @@ export function TodoPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    setDocumentMeta({
+      title: 'Learning list | Jobify',
+      description: 'Your saved Jobify study materials — books, courses, and interview prep.',
+      path: '/learning-list',
+    })
+  }, [])
 
   useEffect(() => {
     void reload()
