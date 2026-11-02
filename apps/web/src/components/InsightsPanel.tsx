@@ -185,13 +185,20 @@ function ResourceList({
     visible.length === 0
       ? 'No matches yet'
       : `${visible.length} recommendation${visible.length === 1 ? '' : 's'}`
+  const hasContent = visible.length > 0
 
   return (
-    <CollapsibleSection id={id} title={title} icon={icon} summary={countLabel}>
+    <CollapsibleSection
+      id={id}
+      title={title}
+      icon={icon}
+      summary={countLabel}
+      defaultOpen={hasContent}
+    >
       <p className="text-sm text-[var(--muted)]">
         Trusted sources only · best matches first.
       </p>
-      {visible.length === 0 ? (
+      {!hasContent ? (
         <p className="mt-2 text-sm text-[var(--muted)]">{empty}</p>
       ) : (
         <>
@@ -316,7 +323,8 @@ export function InsightsPanel({
         </div>
       )}
 
-      <div className={`grid gap-8 ${showCvGaps ? 'lg:grid-cols-2' : ''}`}>
+      {showCvGaps ? (
+      <div className="grid gap-8 lg:grid-cols-2">
         <CollapsibleSection
           id="requirements"
           title="Role requirements"
@@ -354,11 +362,11 @@ export function InsightsPanel({
           </ul>
         </CollapsibleSection>
 
-        {showCvGaps && (
           <CollapsibleSection
             id="gaps"
             title="Still to learn for this role"
             icon="gaps"
+            defaultOpen={data.missing_skills.length > 0}
             summary={
               data.missing_skills.length === 0
                 ? 'No major gaps'
@@ -383,14 +391,15 @@ export function InsightsPanel({
               </ul>
             )}
           </CollapsibleSection>
-        )}
       </div>
+      ) : null}
 
       {curriculum.length > 0 && (
         <CollapsibleSection
           id="curriculum"
           title="Brief curriculum"
           icon="curriculum"
+          defaultOpen
           meta={`~${data.estimated_study_hours}h total plan`}
           summary={`${curriculum.length} phase${curriculum.length === 1 ? '' : 's'} · expand to see the plan`}
         >
@@ -434,10 +443,12 @@ export function InsightsPanel({
         </CollapsibleSection>
       )}
 
+      {roadmap.length > 0 ? (
       <CollapsibleSection
         id="roadmap"
         title="Learning roadmap"
         icon="roadmap"
+        defaultOpen
         meta={`~${data.estimated_study_hours}h estimated`}
         summary={`${roadmap.length} step${roadmap.length === 1 ? '' : 's'} · expand to follow the path`}
       >
@@ -498,8 +509,10 @@ export function InsightsPanel({
           </button>
         )}
       </CollapsibleSection>
+      ) : null}
 
       <div className="grid gap-10 md:grid-cols-2">
+        {data.books.length > 0 ? (
         <ResourceList
           id="books"
           title="Books"
@@ -510,6 +523,8 @@ export function InsightsPanel({
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
+        ) : null}
+        {data.courses.length > 0 ? (
         <ResourceList
           id="courses"
           title="Courses"
@@ -520,6 +535,8 @@ export function InsightsPanel({
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
+        ) : null}
+        {data.certifications.length > 0 ? (
         <ResourceList
           id="certifications"
           title="Certifications"
@@ -529,6 +546,8 @@ export function InsightsPanel({
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
+        ) : null}
+        {data.interview_questions.length > 0 ? (
         <ResourceList
           id="interview"
           title="Interview questions"
@@ -538,6 +557,7 @@ export function InsightsPanel({
           hiddenUrls={hiddenUrls}
           onHide={hideUrl}
         />
+        ) : null}
       </div>
     </div>
   )
