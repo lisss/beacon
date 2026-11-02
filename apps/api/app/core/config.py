@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     github_token: str = ""
     # Public origin for canonical URLs, sitemap, Open Graph (no trailing slash).
     public_site_url: str = "https://pathjobify.duckdns.org"
+    # Optional Google Search Console meta-tag token (HTML-tag verification method).
+    google_site_verification: str = ""
 
     @property
     def cors_origins(self) -> list[str]:

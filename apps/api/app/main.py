@@ -88,15 +88,40 @@ def role_seo_page(slug: str) -> str:
     return build_role_page_html(settings.site_url, title)
 
 
-def _spa_html() -> FileResponse:
-    # Always revalidate HTML so deploys pick up new hashed JS/CSS immediately.
-    return FileResponse(
-        STATIC_DIR / "index.html",
-        headers={
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-        },
+@app.get("/google{code}.html")
+def google_site_verification_file(code: str) -> Response:
+    """
+    Google Search Console HTML-file verification.
+    Must return the exact body Google expects — not the SPA shell.
+    """
+    import re
+
+    if not re.fullmatch(r"[A-Za-z0-9_-]{6,128}", code):
+        raise HTTPException(status_code=404, detail="Not found")
+    body = f"google-site-verification: google{code}.html\n"
+    return Response(
+        content=body,
+        media_type="text/html; charset=utf-8",
+        headers={"Cache-Control": "no-store"},
     )
+
+
+def _spa_html() -> Response:
+    # Always revalidate HTML so deploys pick up new hashed JS/CSS immediately.
+    index = STATIC_DIR / "index.html"
+    headers = {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+    }
+    token = (settings.google_site_verification or "").strip()
+    if not token:
+        return FileResponse(index, headers=headers)
+
+    html = index.read_text(encoding="utf-8")
+    meta = f'<meta name="google-site-verification" content="{token}" />'
+    if 'name="google-site-verification"' not in html:
+        html = html.replace("</head>", f"    {meta}\n  </head>", 1)
+    return Response(content=html, media_type="text/html; charset=utf-8", headers=headers)
 
 
 if STATIC_DIR.is_dir():
