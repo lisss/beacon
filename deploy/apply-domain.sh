@@ -6,7 +6,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="$ROOT/deploy/.provisioned.env"
-KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobby-ec2}"
+KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
 
 : "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. jobby)}"
 : "${DUCKDNS_TOKEN:?set DUCKDNS_TOKEN}"
@@ -25,18 +25,22 @@ echo "==> Update DuckDNS → ${EC2_HOST}"
 curl -fsS "https://www.duckdns.org/update?domains=${DUCKDNS_SUBDOMAIN}&token=${DUCKDNS_TOKEN}&ip=${EC2_HOST}"
 echo
 
-echo "==> Rewrite remote .env DOMAIN=${DOMAIN}"
-"${SSH[@]}" "cat > /opt/jobby/.env" <<EOF
+APP_DIR="${APP_DIR:-/opt/jobify}"
+IMAGE_REF="${IMAGE:-ghcr.io/lisss/jobify:latest}"
+
+echo "==> Rewrite remote .env DOMAIN=${DOMAIN} (dir ${APP_DIR})"
+"${SSH[@]}" "mkdir -p '${APP_DIR}' && cat > '${APP_DIR}/.env'" <<EOF
 DOMAIN=${DOMAIN}
 DUCKDNS_SUBDOMAIN=${DUCKDNS_SUBDOMAIN}
 DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
-IMAGE=${IMAGE:-ghcr.io/lisss/jobby:latest}
+PUBLIC_SITE_URL=https://${DOMAIN}
+IMAGE=${IMAGE_REF}
 REMOTIVE_ENABLED=true
 EOF
-"${SSH[@]}" 'chmod 600 /opt/jobby/.env'
+"${SSH[@]}" "chmod 600 '${APP_DIR}/.env'"
 
 echo "==> Restart with duckdns profile"
-"${SSH[@]}" 'cd /opt/jobby && git fetch --depth 1 origin main && git reset --hard origin/main && docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env up -d --force-recreate'
+"${SSH[@]}" "cd '${APP_DIR}' && git fetch --depth 1 origin main && git reset --hard origin/main && docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env up -d --force-recreate"
 
 # persist locally
 sed -i.bak "s|^DOMAIN=.*|DOMAIN=${DOMAIN}|" "$ENV_FILE" || true

@@ -1,66 +1,47 @@
-# Jobby
+# Jobify
 
-Job & learning aggregator: search a role, see matching jobs, skill frequency, CV gaps, salary distribution, books, courses, GitHub projects, certifications, and a study roadmap.
+See what a job role needs — compare it to your CV or skills — and get a study plan with trusted books, courses, certifications, and interview prep.
+
+**Live:** [https://pathjobby.duckdns.org](https://pathjobby.duckdns.org)
 
 ## Stack
 
 | Layer | Tech |
 |--------|------|
-| Frontend | Next.js (React + TypeScript) → Vercel |
-| Backend | FastAPI (Python) → Railway / Render |
-| Database | SQLite locally by default; PostgreSQL (Docker / Neon) for production |
+| Frontend | Vite + React + TypeScript |
+| Backend | FastAPI (Python) |
+| Database | SQLite locally / on free-tier EC2; Postgres optional |
+| Deploy | GitHub Actions → GHCR → EC2 + Caddy + DuckDNS |
 
-## Quick start
-
-### 1. Backend
-
-> Note: if `python3` on macOS points at a broken Framework install (0-byte binary), use Homebrew Python explicitly.
+## Quick start (hot reload)
 
 ```bash
-cd apps/api
-/usr/local/opt/python@3.13/bin/python3.13 -m venv .venv   # or: python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp ../../.env.example .env
-uvicorn app.main:app --reload --port 8001
+# Terminal 1 — API http://localhost:8001
+make api
+
+# Terminal 2 — UI http://localhost:3000
+make web
 ```
 
-API docs: http://localhost:8001/docs
-
-> If port 8000 is free, you can use that instead — just match `NEXT_PUBLIC_API_URL` in `apps/web/.env.local`.
-
-Optional Postgres instead of SQLite:
-
-```bash
-docker compose up -d
-# in apps/api/.env
-# DATABASE_URL=postgresql+psycopg://jobby:jobby@localhost:5432/jobby
-```
-
-### 2. Frontend
-
-```bash
-cd apps/web
-npm install
-npm run dev
-```
-
-App: http://localhost:3000
+Or Docker (rebuild to pick up code changes): `make up` → http://localhost:8000
 
 ## Deploy
 
-- **Frontend (Vercel):** set Root Directory to `apps/web`, set `NEXT_PUBLIC_API_URL` to your public API URL.
-- **Backend:** deploy `apps/api` to Railway/Render with `Procfile`; set `DATABASE_URL` (Neon) and `API_CORS_ORIGINS` to your Vercel domain.
-- **DB:** Neon Postgres connection string → `DATABASE_URL=postgresql+psycopg://...`
+Push to `main` builds and deploys automatically. See [deploy/README.md](deploy/README.md).
 
-Optional: set `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` for live Adzuna jobs. Remotive is enabled by default.
+Public hostname: `pathjobby.duckdns.org` (SEO canonical). The old `pathjobify.duckdns.org` redirects permanently.
+
+## SEO
+
+- Canonical + Open Graph / Twitter meta on the homepage
+- `/sitemap.xml` and `/robots.txt`
+- Indexable role guides at `/roles/{slug}` (e.g. [/roles/python-developer](https://pathjobby.duckdns.org/roles/python-developer))
+- Google Search Console HTML-file verification via `/google….html`
 
 ## MVP features
 
-- Role search (sample jobs + Remotive; Adzuna when keys are set)
-- Skill frequency across matched jobs
-- CV upload (PDF/TXT) → missing skills
-- Salary distribution
-- Books, courses, GitHub repos, certifications, interview prompts
-- Learning roadmap + estimated study time
-# jobby
+- Role search with typical skill requirements
+- CV upload / skills → gaps vs the role
+- Books, courses, certifications, interview prompts
+- Curriculum + learning roadmap + estimated study time
+- Learning list (saved TODOs)
