@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { SectionIcon, type SectionIconName } from '@/components/SectionIcons'
 import { isSectionOpen, setSectionOpen } from '@/lib/sectionCollapseStore'
 
@@ -23,6 +23,11 @@ export function CollapsibleSection({
   children: ReactNode
 }) {
   const [open, setOpen] = useState(() => isSectionOpen(id, defaultOpen))
+
+  // Pick up defaultOpen changes after hot reload / remounts with new defaults.
+  useEffect(() => {
+    setOpen(isSectionOpen(id, defaultOpen))
+  }, [id, defaultOpen])
 
   function toggle() {
     setOpen((prev) => {

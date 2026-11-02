@@ -1,4 +1,5 @@
-const KEY = 'casty.sections.v2'
+/** Bump when default open/closed rules change so old prefs don't stick. */
+const KEY = 'cast.sections.v4'
 
 type CollapseMap = Record<string, boolean>
 

@@ -188,13 +188,7 @@ function ResourceList({
   const hasContent = visible.length > 0
 
   return (
-    <CollapsibleSection
-      id={id}
-      title={title}
-      icon={icon}
-      summary={countLabel}
-      defaultOpen={hasContent}
-    >
+    <CollapsibleSection id={id} title={title} icon={icon} summary={countLabel}>
       <p className="text-sm text-[var(--muted)]">
         Trusted sources only · best matches first.
       </p>
@@ -329,7 +323,6 @@ export function InsightsPanel({
           id="requirements"
           title="Role requirements"
           icon="requirements"
-          defaultOpen
           summary={`${data.requirements.length} skills · ranked by importance`}
         >
           <ul className="space-y-3">
@@ -366,7 +359,6 @@ export function InsightsPanel({
             id="gaps"
             title="Still to learn for this role"
             icon="gaps"
-            defaultOpen={data.missing_skills.length > 0}
             summary={
               data.missing_skills.length === 0
                 ? 'No major gaps'
@@ -448,7 +440,6 @@ export function InsightsPanel({
         id="roadmap"
         title="Learning roadmap"
         icon="roadmap"
-        defaultOpen
         meta={`~${data.estimated_study_hours}h estimated`}
         summary={`${roadmap.length} step${roadmap.length === 1 ? '' : 's'} · expand to follow the path`}
       >
