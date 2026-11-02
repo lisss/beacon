@@ -1,4 +1,4 @@
-const KEY = 'jobify.sections.v2'
+const KEY = 'jobby.sections.v2'
 
 type CollapseMap = Record<string, boolean>
 

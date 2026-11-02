@@ -31,7 +31,7 @@ import {
 } from '@/lib/cvStore'
 import { todoOpenCount } from '@/lib/todoStore'
 
-const STORAGE_KEY = 'jobify.ui.v1'
+const STORAGE_KEY = 'jobby.ui.v1'
 
 type PersistedUi = {
   query?: string
@@ -112,10 +112,10 @@ export function HomePage() {
   useEffect(() => {
     const sync = () => setTodoCount(todoOpenCount())
     sync()
-    window.addEventListener('jobify-todo-changed', sync)
+    window.addEventListener('jobby-todo-changed', sync)
     window.addEventListener('storage', sync)
     return () => {
-      window.removeEventListener('jobify-todo-changed', sync)
+      window.removeEventListener('jobby-todo-changed', sync)
       window.removeEventListener('storage', sync)
     }
   }, [])

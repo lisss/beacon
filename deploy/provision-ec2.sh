@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Provision a free-tier EC2 host and print the values needed for GitHub Actions.
-# Requires: docker (for aws-cli image), ~/.ssh/jobify-ec2[.pub]
+# Requires: docker (for aws-cli image), ~/.ssh/jobby-ec2[.pub]
 #
 # Usage:
 #   export AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... AWS_DEFAULT_REGION=us-east-1
@@ -8,16 +8,16 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
-KEY_NAME="${KEY_NAME:-jobify}"
+KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobby-ec2}"
+KEY_NAME="${KEY_NAME:-jobby}"
 REGION="${AWS_DEFAULT_REGION:-us-east-1}"
 INSTANCE_TYPE="${INSTANCE_TYPE:-t3.micro}"
-REPO_URL="${REPO_URL:-https://github.com/lisss/jobify.git}"
+REPO_URL="${REPO_URL:-https://github.com/lisss/jobby.git}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 if [[ ! -f "$KEY_PATH" || ! -f "$KEY_PATH.pub" ]]; then
-  echo "Missing $KEY_PATH — generate with: ssh-keygen -t ed25519 -f ~/.ssh/jobify-ec2 -N ''"
+  echo "Missing $KEY_PATH — generate with: ssh-keygen -t ed25519 -f ~/.ssh/jobby-ec2 -N ''"
   exit 1
 fi
 
@@ -26,7 +26,7 @@ if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
   exit 1
 fi
 
-cp "$KEY_PATH.pub" "$TMP/jobify-ec2.pub"
+cp "$KEY_PATH.pub" "$TMP/jobby-ec2.pub"
 
 aws() {
   docker run --rm \
@@ -47,13 +47,13 @@ if ! aws ec2 describe-key-pairs --key-names "$KEY_NAME" >/dev/null 2>&1; then
   # AWS expects the raw key bytes (fileb) or base64 of the pubkey line.
   aws ec2 import-key-pair \
     --key-name "$KEY_NAME" \
-    --public-key-material "fileb:///work/jobify-ec2.pub"
+    --public-key-material "fileb:///work/jobby-ec2.pub"
 else
   echo "Key pair $KEY_NAME already exists"
 fi
 
 echo "==> Security group"
-SG_NAME="jobify-web"
+SG_NAME="jobby-web"
 VPC_ID="$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true --query 'Vpcs[0].VpcId' --output text)"
 SG_ID="$(aws ec2 describe-security-groups --filters "Name=group-name,Values=$SG_NAME" "Name=vpc-id,Values=$VPC_ID" --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null || true)"
 if [[ -z "$SG_ID" || "$SG_ID" == "None" ]]; then
@@ -88,9 +88,9 @@ apt-get update -y
 apt-get install -y ca-certificates curl git
 curl -fsSL https://get.docker.com | sh
 usermod -aG docker ubuntu
-mkdir -p /opt/jobify
-git clone --depth 1 ${REPO_URL} /opt/jobify || true
-chown -R ubuntu:ubuntu /opt/jobify
+mkdir -p /opt/jobby
+git clone --depth 1 ${REPO_URL} /opt/jobby || true
+chown -R ubuntu:ubuntu /opt/jobby
 EOF
 
 echo "==> Launch instance"
@@ -101,7 +101,7 @@ INSTANCE_ID="$(aws ec2 run-instances \
   --security-group-ids "$SG_ID" \
   --count 1 \
   --user-data file:///work/user-data.sh \
-  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=jobify}]" \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=jobby}]" \
   --query 'Instances[0].InstanceId' --output text)"
 echo "INSTANCE_ID=$INSTANCE_ID"
 
@@ -120,7 +120,7 @@ cat > "$OUT" <<EOF
 EC2_HOST=$PUBLIC_IP
 EC2_USER=ubuntu
 DOMAIN=$DOMAIN
-IMAGE=ghcr.io/lisss/jobify:latest
+IMAGE=ghcr.io/lisss/jobby:latest
 INSTANCE_ID=$INSTANCE_ID
 ALLOCATION_ID=$ALLOC
 REGION=$REGION

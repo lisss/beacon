@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /learning-list
 
-Sitemap: https://pathjobify.duckdns.org/sitemap.xml
+Sitemap: https://pathjobby.duckdns.org/sitemap.xml

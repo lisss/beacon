@@ -43,8 +43,8 @@ export function TodoPage() {
   useEffect(() => {
     void reload()
     const sync = () => setItems(listTodoLocal())
-    window.addEventListener('jobify-todo-changed', sync)
-    return () => window.removeEventListener('jobify-todo-changed', sync)
+    window.addEventListener('jobby-todo-changed', sync)
+    return () => window.removeEventListener('jobby-todo-changed', sync)
   }, [])
 
   async function onRemove(url: string) {

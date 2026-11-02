@@ -3,8 +3,8 @@
 # Usage: bash vm-setup.sh [git-repo-url]
 set -euo pipefail
 
-REPO_URL="${1:-https://github.com/lisss/jobify.git}"
-APP_DIR="${HOME}/jobify"
+REPO_URL="${1:-https://github.com/lisss/jobby.git}"
+APP_DIR="${HOME}/jobby"
 PORT="${PORT:-8000}"
 
 if command -v apt-get >/dev/null 2>&1; then
@@ -53,13 +53,13 @@ if ! docker info >/dev/null 2>&1; then
   DOCKER=(sudo docker)
 fi
 
-"${DOCKER[@]}" build -t jobify:latest .
-"${DOCKER[@]}" rm -f jobify 2>/dev/null || true
-"${DOCKER[@]}" run -d --name jobify --restart unless-stopped \
+"${DOCKER[@]}" build -t jobby:latest .
+"${DOCKER[@]}" rm -f jobby 2>/dev/null || true
+"${DOCKER[@]}" run -d --name jobby --restart unless-stopped \
   -p "${PORT}:8000" \
   -e API_CORS_ORIGINS='*' \
-  -e DATABASE_URL='sqlite:////tmp/jobify.db' \
-  jobify:latest
+  -e DATABASE_URL='sqlite:////tmp/jobby.db' \
+  jobby:latest
 
 echo
 echo "App should be at: http://$(curl -s --max-time 3 ifconfig.me 2>/dev/null || echo YOUR_PUBLIC_IP):${PORT}/"

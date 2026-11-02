@@ -1,4 +1,4 @@
-const SITE = 'https://pathjobify.duckdns.org'
+const SITE = 'https://pathjobby.duckdns.org'
 
 export function setDocumentMeta({
   title,

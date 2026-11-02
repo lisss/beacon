@@ -73,7 +73,7 @@ jobs:
           script: |
             set -euo pipefail
             APP_DIR="${{ vars.APP_DIR }}"
-            APP_DIR="${APP_DIR:-/opt/jobify}"
+            APP_DIR="${APP_DIR:-/opt/jobby}"
             cd "$APP_DIR"
             git fetch --depth 1 origin main
             git reset --hard origin/main

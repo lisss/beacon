@@ -34,7 +34,7 @@ Optional Postgres instead of SQLite:
 ```bash
 docker compose up -d
 # in apps/api/.env
-# DATABASE_URL=postgresql+psycopg://jobify:jobify@localhost:5432/jobify
+# DATABASE_URL=postgresql+psycopg://jobby:jobby@localhost:5432/jobby
 ```
 
 ### 2. Frontend
@@ -63,4 +63,4 @@ Optional: set `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` for live Adzuna jobs. Remotive 
 - Salary distribution
 - Books, courses, GitHub repos, certifications, interview prompts
 - Learning roadmap + estimated study time
-# jobify
+# jobby
