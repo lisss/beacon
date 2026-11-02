@@ -60,7 +60,7 @@ if [[ -z "$SG_ID" || "$SG_ID" == "None" ]]; then
   SG_ID="$(aws ec2 create-security-group --group-name "$SG_NAME" --description "Jobify HTTP/SSH" --vpc-id "$VPC_ID" --query GroupId --output text)"
   MYIP="$(curl -4 -fsS https://checkip.amazonaws.com | tr -d '[:space:]')"
   aws ec2 authorize-security-group-ingress --group-id "$SG_ID" --ip-permissions \
-    "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${MYIP}/32,Description=ssh-home}]" \
+    "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=0.0.0.0/0,Description=ssh-ci-and-admin}]" \
     "IpProtocol=tcp,FromPort=80,ToPort=80,IpRanges=[{CidrIp=0.0.0.0/0,Description=http}]" \
     "IpProtocol=tcp,FromPort=443,ToPort=443,IpRanges=[{CidrIp=0.0.0.0/0,Description=https}]"
 fi
