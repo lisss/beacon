@@ -29,7 +29,7 @@ Or Docker (rebuild to pick up code changes): `make up` → http://localhost:8000
 
 Push to `main` builds and deploys automatically. See [deploy/README.md](deploy/README.md).
 
-Public hostname: `getcast.duckdns.org` (SEO canonical). Older DuckDNS names (`pathjobify`, `pathjobby`, `pathjbby`) redirect permanently.
+Public hostname: `getcast.duckdns.org` (SEO canonical). Older DuckDNS names (`pathjobify`, `pathjobby`) redirect permanently.
 
 ## SEO
 

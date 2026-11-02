@@ -54,7 +54,7 @@ services:
       PORT: "8000"
       # SQLite keeps a t3.micro under ~1GB RAM; swap to Postgres later if you upgrade.
       DATABASE_URL: sqlite:////data/cast.db
-      API_CORS_ORIGINS: https://${DOMAIN},http://${DOMAIN},https://pathjobify.duckdns.org,http://pathjobify.duckdns.org,https://pathjobby.duckdns.org,http://pathjobby.duckdns.org,https://pathjbby.duckdns.org,http://pathjbby.duckdns.org
+      API_CORS_ORIGINS: https://${DOMAIN},http://${DOMAIN},https://pathjobify.duckdns.org,http://pathjobify.duckdns.org,https://pathjobby.duckdns.org,http://pathjobby.duckdns.org
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://${DOMAIN}}
       GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
       REMOTIVE_ENABLED: ${REMOTIVE_ENABLED:-true}

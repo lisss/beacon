@@ -12,7 +12,3 @@ pathjobify.duckdns.org {
 pathjobby.duckdns.org {
 	redir https://{$DOMAIN}{uri} permanent
 }
-
-pathjbby.duckdns.org {
-	redir https://{$DOMAIN}{uri} permanent
-}
