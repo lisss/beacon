@@ -33,14 +33,14 @@ async def lifespan(_: FastAPI):
             seed_sample_jobs(session)
     except Exception as exc:
         # Allow API to boot even if DB is temporarily unavailable
-        print(f"[jobby] DB init warning: {exc}")
+        print(f"[jbby] DB init warning: {exc}")
     yield
 
 
 settings = get_settings()
 
 app = FastAPI(
-    title="Jobby API",
+    title="jbby API",
     description="Job + learning insights aggregator",
     version="0.1.0",
     lifespan=lifespan,
@@ -63,7 +63,7 @@ app.include_router(router, prefix="/api")
 
 @app.get("/api")
 def api_root() -> dict:
-    return {"name": "jobby-api", "docs": "/docs"}
+    return {"name": "jbby-api", "docs": "/docs"}
 
 
 @app.get("/robots.txt", response_class=PlainTextResponse)
@@ -149,4 +149,4 @@ else:
 
     @app.get("/")
     def root() -> dict:
-        return {"name": "jobby-api", "docs": "/docs", "hint": "UI not bundled"}
+        return {"name": "jbby-api", "docs": "/docs", "hint": "UI not bundled"}

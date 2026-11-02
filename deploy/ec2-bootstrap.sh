@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # First-boot / one-shot setup for Ubuntu 24.04 on a free-tier EC2 instance.
 # Run as root (via user-data) or with sudo after SSH:
-#   curl -fsSL https://raw.githubusercontent.com/lisss/jobby/main/deploy/ec2-bootstrap.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/lisss/jbby/main/deploy/ec2-bootstrap.sh | sudo bash
 set -euo pipefail
 
-REPO_URL="${REPO_URL:-https://github.com/lisss/jobby.git}"
-APP_DIR="${APP_DIR:-/opt/jobby}"
+REPO_URL="${REPO_URL:-https://github.com/lisss/jbby.git}"
+APP_DIR="${APP_DIR:-/opt/jbby}"
 APP_USER="${APP_USER:-ubuntu}"
 
 export DEBIAN_FRONTEND=noninteractive

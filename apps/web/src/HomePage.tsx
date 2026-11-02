@@ -31,7 +31,7 @@ import {
 } from '@/lib/cvStore'
 import { todoOpenCount } from '@/lib/todoStore'
 
-const STORAGE_KEY = 'jobby.ui.v1'
+const STORAGE_KEY = 'jbby.ui.v1'
 
 type PersistedUi = {
   query?: string
@@ -76,7 +76,7 @@ export function HomePage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Jobby — role requirements, skills gaps & learning paths',
+      title: 'jbby — role requirements, skills gaps & learning paths',
       description:
         'See what a job role typically needs, compare it to your CV or skills, and get a study plan with books, courses, and interview prep.',
       path: '/',
@@ -112,10 +112,10 @@ export function HomePage() {
   useEffect(() => {
     const sync = () => setTodoCount(todoOpenCount())
     sync()
-    window.addEventListener('jobby-todo-changed', sync)
+    window.addEventListener('jbby-todo-changed', sync)
     window.addEventListener('storage', sync)
     return () => {
-      window.removeEventListener('jobby-todo-changed', sync)
+      window.removeEventListener('jbby-todo-changed', sync)
       window.removeEventListener('storage', sync)
     }
   }, [])
@@ -551,7 +551,7 @@ export function HomePage() {
           ))}
         </ul>
         <p className="mt-4 max-w-2xl leading-relaxed">
-          Jobby is a free career learning planner: compare job role requirements to your
+          jbby is a free career learning planner: compare job role requirements to your
           skills or CV, then get books, courses, certifications, and interview prep in one
           roadmap.
         </p>

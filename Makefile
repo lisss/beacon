@@ -35,7 +35,7 @@ sync:
 up: build
 	docker compose up -d
 	@echo ""
-	@echo "Jobby is starting → http://localhost:8000"
+	@echo "jbby is starting → http://localhost:8000"
 	@echo "Learning list     → http://localhost:8000/learning-list"
 	@echo "API health        → http://localhost:8000/api/health"
 	@echo "For instant local edits use: make api & make web → http://localhost:3000"

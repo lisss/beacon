@@ -39,7 +39,7 @@ export function PathJMark({ className = '' }: { className?: string }) {
  */
 export function Logo({
   className = '',
-  title = 'Jobby',
+  title = 'jbby',
   onClick,
   asHeading = false,
 }: LogoProps) {

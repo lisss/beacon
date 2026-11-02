@@ -1,18 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: jobby-db
+    container_name: jbby-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: jobby
-      POSTGRES_PASSWORD: jobby
-      POSTGRES_DB: jobby
+      POSTGRES_USER: jbby
+      POSTGRES_PASSWORD: jbby
+      POSTGRES_DB: jbby
     ports:
       - "5432:5432"
     volumes:
-      - jobby_pgdata:/var/lib/postgresql/data
+      - jbby_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jobby -d jobby"]
+      test: ["CMD-SHELL", "pg_isready -U jbby -d jbby"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: jobby-api
+    container_name: jbby-api
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       PORT: "8000"
-      DATABASE_URL: postgresql+psycopg://jobby:jobby@db:5432/jobby
+      DATABASE_URL: postgresql+psycopg://jbby:jbby@db:5432/jbby
       API_CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000
       REMOTIVE_ENABLED: "true"
       # Optional keys — pass through from host .env if present
@@ -51,4 +51,4 @@ services:
       start_period: 20s
 
 volumes:
-  jobby_pgdata:
+  jbby_pgdata:

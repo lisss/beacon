@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Point the live EC2 stack at a free DuckDNS hostname.
 # Usage:
-#   DUCKDNS_SUBDOMAIN=jobby DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
+#   DUCKDNS_SUBDOMAIN=jbby DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="$ROOT/deploy/.provisioned.env"
 KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
 
-: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. jobby)}"
+: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. jbby)}"
 : "${DUCKDNS_TOKEN:?set DUCKDNS_TOKEN}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
