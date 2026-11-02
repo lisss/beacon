@@ -321,6 +321,7 @@ export function InsightsPanel({
           id="requirements"
           title="Role requirements"
           icon="requirements"
+          defaultOpen
           summary={`${data.requirements.length} skills · ranked by importance`}
         >
           <ul className="space-y-3">

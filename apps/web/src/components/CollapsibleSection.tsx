@@ -8,6 +8,7 @@ export function CollapsibleSection({
   icon,
   summary,
   meta,
+  defaultOpen = false,
   children,
 }: {
   id: string
@@ -17,9 +18,11 @@ export function CollapsibleSection({
   summary?: ReactNode
   /** Right-side meta (e.g. hours) always visible in the header */
   meta?: ReactNode
+  /** Initial open state when the user has never toggled this section */
+  defaultOpen?: boolean
   children: ReactNode
 }) {
-  const [open, setOpen] = useState(() => isSectionOpen(id))
+  const [open, setOpen] = useState(() => isSectionOpen(id, defaultOpen))
 
   function toggle() {
     setOpen((prev) => {
@@ -30,7 +33,10 @@ export function CollapsibleSection({
   }
 
   return (
-    <section className={`collapse-section ${open ? 'collapse-section--open' : ''}`.trim()}>
+    <section
+      data-section={id}
+      className={`collapse-section ${open ? 'collapse-section--open' : ''}`.trim()}
+    >
       <button
         type="button"
         className="collapse-header"

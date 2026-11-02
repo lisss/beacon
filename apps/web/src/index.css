@@ -167,6 +167,40 @@ button.logo:hover {
   padding: var(--panel-pad-y) var(--panel-pad-x);
 }
 
+/* Very light tinted backgrounds per section */
+.collapse-section[data-section='requirements'] {
+  background: #eef6f3;
+  border-color: rgba(47, 111, 102, 0.16);
+}
+.collapse-section[data-section='gaps'] {
+  background: #f8f1ee;
+  border-color: rgba(196, 115, 106, 0.18);
+}
+.collapse-section[data-section='curriculum'] {
+  background: #eef3f8;
+  border-color: rgba(26, 95, 158, 0.14);
+}
+.collapse-section[data-section='roadmap'] {
+  background: #f3f0f8;
+  border-color: rgba(90, 70, 140, 0.14);
+}
+.collapse-section[data-section='books'] {
+  background: #f7f3ea;
+  border-color: rgba(154, 91, 47, 0.14);
+}
+.collapse-section[data-section='courses'] {
+  background: #eef7f5;
+  border-color: rgba(12, 122, 104, 0.14);
+}
+.collapse-section[data-section='certifications'] {
+  background: #f6f0f4;
+  border-color: rgba(140, 70, 110, 0.14);
+}
+.collapse-section[data-section='interview'] {
+  background: #f0f5f8;
+  border-color: rgba(50, 100, 130, 0.14);
+}
+
 @media (min-width: 640px) {
   .collapse-section {
     padding: var(--panel-pad-y-sm) var(--panel-pad-x-sm);
@@ -240,9 +274,9 @@ button.logo:hover {
 
 /* Info card above insights — same chrome as sections */
 .insights-banner {
-  border: 1px solid var(--line);
+  border: 1px solid rgba(47, 111, 102, 0.16);
   border-radius: var(--radius-section);
-  background: var(--surface);
+  background: #eef6f3;
   box-shadow: var(--shadow-section);
   padding: var(--panel-pad-y) var(--panel-pad-x);
 }

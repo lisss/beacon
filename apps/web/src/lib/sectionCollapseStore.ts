@@ -21,10 +21,16 @@ function write(map: CollapseMap) {
   }
 }
 
-/** Open state for a section. Default: collapsed (false). */
-export function isSectionOpen(id: string): boolean {
+/**
+ * Open state for a section.
+ * If the user has never toggled it, use `defaultOpen` (false unless provided).
+ */
+export function isSectionOpen(id: string, defaultOpen = false): boolean {
   const map = read()
-  return map[id] === true
+  if (Object.prototype.hasOwnProperty.call(map, id)) {
+    return map[id] === true
+  }
+  return defaultOpen
 }
 
 export function setSectionOpen(id: string, open: boolean): void {
