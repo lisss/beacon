@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Point the live EC2 stack at a free DuckDNS hostname.
 # Usage:
-#   DUCKDNS_SUBDOMAIN=cast DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
+#   DUCKDNS_SUBDOMAIN=casty DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="$ROOT/deploy/.provisioned.env"
 KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
 
-: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. cast)}"
+: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. casty)}"
 : "${DUCKDNS_TOKEN:?set DUCKDNS_TOKEN}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -25,8 +25,8 @@ echo "==> Update DuckDNS → ${EC2_HOST}"
 curl -fsS "https://www.duckdns.org/update?domains=${DUCKDNS_SUBDOMAIN}&token=${DUCKDNS_TOKEN}&ip=${EC2_HOST}"
 echo
 
-APP_DIR="${APP_DIR:-/opt/cast}"
-IMAGE_REF="${IMAGE:-ghcr.io/lisss/cast:latest}"
+APP_DIR="${APP_DIR:-/opt/casty}"
+IMAGE_REF="${IMAGE:-ghcr.io/lisss/casty:latest}"
 
 echo "==> Ensure app dir ${APP_DIR} (migrate from /opt/jobify if needed)"
 "${SSH[@]}" "set -e
@@ -34,10 +34,10 @@ if [ -d /opt/jobify ] && [ ! -e '${APP_DIR}' ]; then
   sudo mv /opt/jobify '${APP_DIR}'
 fi
 mkdir -p '${APP_DIR}'
-# Prefer the Cast GHCR image; fall back to the previous jobify tag if missing.
+# Prefer the Casty GHCR image; fall back to the previous jobify tag if missing.
 if ! docker pull '${IMAGE_REF}' >/dev/null 2>&1; then
   if docker pull ghcr.io/lisss/jobify:latest >/dev/null 2>&1; then
-    echo 'Using fallback image ghcr.io/lisss/jobify:latest until cast image is published'
+    echo 'Using fallback image ghcr.io/lisss/jobify:latest until casty image is published'
   fi
 fi
 "
@@ -55,7 +55,7 @@ EOF
 
 echo "==> Restart with duckdns profile"
 "${SSH[@]}" "cd '${APP_DIR}' &&
-  (git remote set-url origin https://github.com/lisss/cast.git 2>/dev/null || true) &&
+  (git remote set-url origin https://github.com/lisss/casty.git 2>/dev/null || true) &&
   git fetch --depth 1 origin main &&
   git reset --hard origin/main &&
   if ! docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env pull; then

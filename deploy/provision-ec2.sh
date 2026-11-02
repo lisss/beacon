@@ -9,10 +9,10 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
-KEY_NAME="${KEY_NAME:-cast}"
+KEY_NAME="${KEY_NAME:-casty}"
 REGION="${AWS_DEFAULT_REGION:-us-east-1}"
 INSTANCE_TYPE="${INSTANCE_TYPE:-t3.micro}"
-REPO_URL="${REPO_URL:-https://github.com/lisss/cast.git}"
+REPO_URL="${REPO_URL:-https://github.com/lisss/casty.git}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
@@ -26,7 +26,7 @@ if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
   exit 1
 fi
 
-cp "$KEY_PATH.pub" "$TMP/cast-ec2.pub"
+cp "$KEY_PATH.pub" "$TMP/casty-ec2.pub"
 
 aws() {
   docker run --rm \
@@ -47,17 +47,17 @@ if ! aws ec2 describe-key-pairs --key-names "$KEY_NAME" >/dev/null 2>&1; then
   # AWS expects the raw key bytes (fileb) or base64 of the pubkey line.
   aws ec2 import-key-pair \
     --key-name "$KEY_NAME" \
-    --public-key-material "fileb:///work/cast-ec2.pub"
+    --public-key-material "fileb:///work/casty-ec2.pub"
 else
   echo "Key pair $KEY_NAME already exists"
 fi
 
 echo "==> Security group"
-SG_NAME="cast-web"
+SG_NAME="casty-web"
 VPC_ID="$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true --query 'Vpcs[0].VpcId' --output text)"
 SG_ID="$(aws ec2 describe-security-groups --filters "Name=group-name,Values=$SG_NAME" "Name=vpc-id,Values=$VPC_ID" --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null || true)"
 if [[ -z "$SG_ID" || "$SG_ID" == "None" ]]; then
-  SG_ID="$(aws ec2 create-security-group --group-name "$SG_NAME" --description "cast HTTP/SSH" --vpc-id "$VPC_ID" --query GroupId --output text)"
+  SG_ID="$(aws ec2 create-security-group --group-name "$SG_NAME" --description "casty HTTP/SSH" --vpc-id "$VPC_ID" --query GroupId --output text)"
   MYIP="$(curl -4 -fsS https://checkip.amazonaws.com | tr -d '[:space:]')"
   aws ec2 authorize-security-group-ingress --group-id "$SG_ID" --ip-permissions \
     "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=0.0.0.0/0,Description=ssh-ci-and-admin}]" \
@@ -88,9 +88,9 @@ apt-get update -y
 apt-get install -y ca-certificates curl git
 curl -fsSL https://get.docker.com | sh
 usermod -aG docker ubuntu
-mkdir -p /opt/cast
-git clone --depth 1 ${REPO_URL} /opt/cast || true
-chown -R ubuntu:ubuntu /opt/cast
+mkdir -p /opt/casty
+git clone --depth 1 ${REPO_URL} /opt/casty || true
+chown -R ubuntu:ubuntu /opt/casty
 EOF
 
 echo "==> Launch instance"
@@ -101,7 +101,7 @@ INSTANCE_ID="$(aws ec2 run-instances \
   --security-group-ids "$SG_ID" \
   --count 1 \
   --user-data file:///work/user-data.sh \
-  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=cast}]" \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=casty}]" \
   --query 'Instances[0].InstanceId' --output text)"
 echo "INSTANCE_ID=$INSTANCE_ID"
 
@@ -120,7 +120,7 @@ cat > "$OUT" <<EOF
 EC2_HOST=$PUBLIC_IP
 EC2_USER=ubuntu
 DOMAIN=$DOMAIN
-IMAGE=ghcr.io/lisss/cast:latest
+IMAGE=ghcr.io/lisss/casty:latest
 INSTANCE_ID=$INSTANCE_ID
 ALLOCATION_ID=$ALLOC
 REGION=$REGION

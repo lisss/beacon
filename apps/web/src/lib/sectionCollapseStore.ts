@@ -1,4 +1,4 @@
-const KEY = 'cast.sections.v2'
+const KEY = 'casty.sections.v2'
 
 type CollapseMap = Record<string, boolean>
 

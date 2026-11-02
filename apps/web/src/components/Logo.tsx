@@ -8,8 +8,8 @@ type LogoProps = {
   asHeading?: boolean
 }
 
-/** Cast mark (gap bridge) mark only (for reuse next to links, etc.). */
-export function CastMark({ className = '' }: { className?: string }) {
+/** Casty mark (gap bridge) mark only (for reuse next to links, etc.). */
+export function CastyMark({ className = '' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -34,18 +34,18 @@ export function CastMark({ className = '' }: { className?: string }) {
 }
 
 /**
- * Cast mark (gap bridge) mark with wordmark.
+ * Casty mark (gap bridge) mark with wordmark.
  * Color via currentColor (shared with wordmark).
  */
 export function Logo({
   className = '',
-  title = 'Cast',
+  title = 'Casty',
   onClick,
   asHeading = false,
 }: LogoProps) {
   const inner = (
     <>
-      <CastMark className="logo-mark" />
+      <CastyMark className="logo-mark" />
       <span className="logo-wordmark">{title}</span>
     </>
   )

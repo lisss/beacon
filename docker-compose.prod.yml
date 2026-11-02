@@ -10,7 +10,7 @@ services:
   # Otherwise use DOMAIN=<elastic-ip>.sslip.io (no signup).
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
-    container_name: cast-duckdns
+    container_name: casty-duckdns
     restart: unless-stopped
     profiles: ["duckdns"]
     environment:
@@ -25,7 +25,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
-    container_name: cast-caddy
+    container_name: casty-caddy
     restart: unless-stopped
     ports:
       - "80:80"
@@ -45,15 +45,15 @@ services:
         max-file: "2"
 
   api:
-    image: ${IMAGE:-ghcr.io/lisss/cast:latest}
-    container_name: cast-api
+    image: ${IMAGE:-ghcr.io/lisss/casty:latest}
+    container_name: casty-api
     restart: unless-stopped
     expose:
       - "8000"
     environment:
       PORT: "8000"
       # SQLite keeps a t3.micro under ~1GB RAM; swap to Postgres later if you upgrade.
-      DATABASE_URL: sqlite:////data/cast.db
+      DATABASE_URL: sqlite:////data/casty.db
       API_CORS_ORIGINS: https://${DOMAIN},http://${DOMAIN},https://pathjobify.duckdns.org,http://pathjobify.duckdns.org,https://pathjobby.duckdns.org,http://pathjobby.duckdns.org
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://${DOMAIN}}
       GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}

@@ -4,7 +4,7 @@ import uuid
 
 from fastapi import Request, Response
 
-SESSION_COOKIE = "cast_sid"
+SESSION_COOKIE = "casty_sid"
 SESSION_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
 
 

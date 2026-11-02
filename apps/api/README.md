@@ -1,5 +1,5 @@
 """
-cast API — FastAPI backend.
+casty API — FastAPI backend.
 
 Local:
   source .venv/bin/activate

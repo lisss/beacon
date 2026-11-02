@@ -1,4 +1,4 @@
-# Canonical hostname (SEO). Set DOMAIN in .env, e.g. getcast.duckdns.org
+# Canonical hostname (SEO). Set DOMAIN in .env, e.g. getcasty.duckdns.org
 {$DOMAIN} {
 	encode gzip
 	reverse_proxy api:8000

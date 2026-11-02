@@ -18,7 +18,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8000 \
     API_CORS_ORIGINS=* \
-    DATABASE_URL=sqlite:////tmp/cast.db
+    DATABASE_URL=sqlite:////tmp/casty.db
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
