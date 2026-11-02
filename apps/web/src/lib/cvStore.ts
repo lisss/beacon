@@ -1,7 +1,7 @@
 import type { StoredCv } from '@/lib/api'
 
-const CV_META_KEY = 'jbby.cv.meta.v1'
-const CV_DB = 'jbby-cv'
+const CV_META_KEY = 'cast.cv.meta.v1'
+const CV_DB = 'cast-cv'
 const CV_STORE = 'files'
 const CV_FILE_KEY = 'current'
 

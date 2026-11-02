@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     # SQLite by default for zero-setup local dev; set DATABASE_URL to Postgres/Neon in prod.
-    database_url: str = "sqlite:///./jbby.db"
+    database_url: str = "sqlite:///./cast.db"
     api_cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     adzuna_app_id: str = ""
     adzuna_app_key: str = ""
@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     google_books_api_key: str = ""
     github_token: str = ""
     # Public origin for canonical URLs, sitemap, Open Graph (no trailing slash).
-    public_site_url: str = "https://pathjbby.duckdns.org"
+    public_site_url: str = "https://getcast.duckdns.org"
     # Optional Google Search Console meta-tag token (HTML-tag verification method).
     google_site_verification: str = ""
 

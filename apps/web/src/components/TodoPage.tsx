@@ -34,8 +34,8 @@ export function TodoPage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Learning list | jbby',
-      description: 'Your saved jbby study materials — books, courses, and interview prep.',
+      title: 'Learning list | Cast',
+      description: 'Your saved Cast study materials — books, courses, and interview prep.',
       path: '/learning-list',
     })
   }, [])
@@ -43,8 +43,8 @@ export function TodoPage() {
   useEffect(() => {
     void reload()
     const sync = () => setItems(listTodoLocal())
-    window.addEventListener('jbby-todo-changed', sync)
-    return () => window.removeEventListener('jbby-todo-changed', sync)
+    window.addEventListener('cast-todo-changed', sync)
+    return () => window.removeEventListener('cast-todo-changed', sync)
   }, [])
 
   async function onRemove(url: string) {

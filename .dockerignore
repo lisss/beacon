@@ -15,7 +15,7 @@ apps/web-next-backup
 
 # Local DBs & uploads
 *.db
-**/jbby.db
+**/cast.db
 apps/api/uploads
 uploads
 

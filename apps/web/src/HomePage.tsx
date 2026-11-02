@@ -20,7 +20,7 @@ import {
   suggestRoles,
 } from '@/lib/api'
 import { InsightsPanel } from '@/components/InsightsPanel'
-import { Logo, PathJMark } from '@/components/Logo'
+import { Logo, CastMark } from '@/components/Logo'
 import { Typeahead } from '@/components/Typeahead'
 import {
   clearCvFile,
@@ -31,7 +31,7 @@ import {
 } from '@/lib/cvStore'
 import { todoOpenCount } from '@/lib/todoStore'
 
-const STORAGE_KEY = 'jbby.ui.v1'
+const STORAGE_KEY = 'cast.ui.v1'
 
 type PersistedUi = {
   query?: string
@@ -76,7 +76,7 @@ export function HomePage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'jbby — role requirements, skills gaps & learning paths',
+      title: 'Cast — role requirements, skills gaps & learning paths',
       description:
         'See what a job role typically needs, compare it to your CV or skills, and get a study plan with books, courses, and interview prep.',
       path: '/',
@@ -112,10 +112,10 @@ export function HomePage() {
   useEffect(() => {
     const sync = () => setTodoCount(todoOpenCount())
     sync()
-    window.addEventListener('jbby-todo-changed', sync)
+    window.addEventListener('cast-todo-changed', sync)
     window.addEventListener('storage', sync)
     return () => {
-      window.removeEventListener('jbby-todo-changed', sync)
+      window.removeEventListener('cast-todo-changed', sync)
       window.removeEventListener('storage', sync)
     }
   }, [])
@@ -352,7 +352,7 @@ export function HomePage() {
       <header className="mb-12 flex flex-wrap items-center justify-between gap-4">
         <Logo asHeading />
         <Link to="/learning-list" className="todo-link">
-          <PathJMark className="todo-link-mark" />
+          <CastMark className="todo-link-mark" />
           <span className="todo-link-label">Learning list</span>
           {todoCount > 0 ? (
             <span className="todo-link-count" aria-label={`${todoCount} open items`}>
@@ -551,7 +551,7 @@ export function HomePage() {
           ))}
         </ul>
         <p className="mt-4 max-w-2xl leading-relaxed">
-          jbby is a free career learning planner: compare job role requirements to your
+          Cast is a free career learning planner: compare job role requirements to your
           skills or CV, then get books, courses, certifications, and interview prep in one
           roadmap.
         </p>

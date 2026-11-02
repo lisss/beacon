@@ -86,10 +86,10 @@ def build_role_page_html(site: str, title: str) -> str:
     slug = role_slug(title)
     reqs = requirements_for_role(title)
     esc_title = html.escape(title)
-    page_title = html.escape(f"{title} skills & learning path | jbby")
+    page_title = html.escape(f"{title} skills & learning path | Cast")
     description = html.escape(
         f"See typical {title} role requirements, ranked skills, and a study plan "
-        f"with books, courses, and interview prep on jbby."
+        f"with books, courses, and interview prep on Cast."
     )
     canonical = html.escape(f"{site}/roles/{slug}")
     app_link = html.escape(f"{site}/?q={title}")
@@ -114,7 +114,7 @@ def build_role_page_html(site: str, title: str) -> str:
         "url": f"{site}/roles/{slug}",
         "isPartOf": {
             "@type": "WebSite",
-            "name": "jbby",
+            "name": "Cast",
             "url": site,
         },
         "about": {
@@ -135,7 +135,7 @@ def build_role_page_html(site: str, title: str) -> str:
   <link rel="canonical" href="{canonical}" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="jbby" />
+  <meta property="og:site_name" content="Cast" />
   <meta property="og:title" content="{page_title}" />
   <meta property="og:description" content="{description}" />
   <meta property="og:url" content="{canonical}" />
@@ -161,10 +161,10 @@ def build_role_page_html(site: str, title: str) -> str:
 </head>
 <body>
   <main>
-    <p class="muted"><a href="{html.escape(site)}/">jbby</a> · Role guide</p>
+    <p class="muted"><a href="{html.escape(site)}/">Cast</a> · Role guide</p>
     <h1>{esc_title}: skills &amp; learning path</h1>
     <p>
-      jbby maps what a <strong>{esc_title}</strong> role typically needs,
+      Cast maps what a <strong>{esc_title}</strong> role typically needs,
       then helps you plan books, courses, certifications, and interview prep
       against your own skills or CV.
     </p>
@@ -178,11 +178,11 @@ def build_role_page_html(site: str, title: str) -> str:
     </div>
     <p>
       Upload a CV or paste skills to see gaps, a curriculum, trusted resources,
-      and a personalised roadmap — free on jbby.
+      and a personalised roadmap — free on Cast.
     </p>
     <footer>
       <a href="{html.escape(site)}/sitemap.xml">Sitemap</a>
-      · More roles on <a href="{html.escape(site)}/">jbby</a>
+      · More roles on <a href="{html.escape(site)}/">Cast</a>
     </footer>
   </main>
 </body>

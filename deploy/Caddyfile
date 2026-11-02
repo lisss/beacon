@@ -1,10 +1,18 @@
-# Canonical hostname (SEO). Set DOMAIN in .env, e.g. pathjbby.duckdns.org
+# Canonical hostname (SEO). Set DOMAIN in .env, e.g. getcast.duckdns.org
 {$DOMAIN} {
 	encode gzip
 	reverse_proxy api:8000
 }
 
-# Keep the previous DuckDNS name working with a permanent redirect.
+# Previous DuckDNS names → canonical (SEO)
 pathjobify.duckdns.org {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+pathjobby.duckdns.org {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+pathjbby.duckdns.org {
 	redir https://{$DOMAIN}{uri} permanent
 }

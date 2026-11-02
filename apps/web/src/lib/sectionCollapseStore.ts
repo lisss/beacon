@@ -1,4 +1,4 @@
-const KEY = 'jbby.sections.v2'
+const KEY = 'cast.sections.v2'
 
 type CollapseMap = Record<string, boolean>
 

@@ -1,4 +1,4 @@
-const SITE = 'https://pathjbby.duckdns.org'
+const SITE = 'https://getcast.duckdns.org'
 
 export function setDocumentMeta({
   title,
@@ -13,7 +13,7 @@ export function setDocumentMeta({
 
   const desc =
     description ??
-    'jbby shows what a job role typically needs, compares it to your skills, and builds a study plan.'
+    'Cast shows what a job role typically needs, compares it to your skills, and builds a study plan.'
   let meta = document.querySelector('meta[name="description"]')
   if (!meta) {
     meta = document.createElement('meta')

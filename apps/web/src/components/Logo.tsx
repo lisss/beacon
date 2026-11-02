@@ -8,8 +8,8 @@ type LogoProps = {
   asHeading?: boolean
 }
 
-/** Path-J + gap-bridge mark only (for reuse next to links, etc.). */
-export function PathJMark({ className = '' }: { className?: string }) {
+/** Cast mark (gap bridge) mark only (for reuse next to links, etc.). */
+export function CastMark({ className = '' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -34,18 +34,18 @@ export function PathJMark({ className = '' }: { className?: string }) {
 }
 
 /**
- * Path-J + gap-bridge mark with wordmark.
+ * Cast mark (gap bridge) mark with wordmark.
  * Color via currentColor (shared with wordmark).
  */
 export function Logo({
   className = '',
-  title = 'jbby',
+  title = 'Cast',
   onClick,
   asHeading = false,
 }: LogoProps) {
   const inner = (
     <>
-      <PathJMark className="logo-mark" />
+      <CastMark className="logo-mark" />
       <span className="logo-wordmark">{title}</span>
     </>
   )

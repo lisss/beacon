@@ -1,5 +1,5 @@
 """
-jbby API — FastAPI backend.
+cast API — FastAPI backend.
 
 Local:
   source .venv/bin/activate
