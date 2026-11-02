@@ -1,5 +1,5 @@
 """
-Jobify API — FastAPI backend.
+Jobby API — FastAPI backend.
 
 Local:
   source .venv/bin/activate

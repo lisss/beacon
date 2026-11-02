@@ -76,7 +76,7 @@ export function HomePage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Jobify — role requirements, skills gaps & learning paths',
+      title: 'Jobby — role requirements, skills gaps & learning paths',
       description:
         'See what a job role typically needs, compare it to your CV or skills, and get a study plan with books, courses, and interview prep.',
       path: '/',
@@ -551,7 +551,7 @@ export function HomePage() {
           ))}
         </ul>
         <p className="mt-4 max-w-2xl leading-relaxed">
-          Jobify is a free career learning planner: compare job role requirements to your
+          Jobby is a free career learning planner: compare job role requirements to your
           skills or CV, then get books, courses, certifications, and interview prep in one
           roadmap.
         </p>

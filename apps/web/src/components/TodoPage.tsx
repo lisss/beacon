@@ -34,8 +34,8 @@ export function TodoPage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Learning list | Jobify',
-      description: 'Your saved Jobify study materials — books, courses, and interview prep.',
+      title: 'Learning list | Jobby',
+      description: 'Your saved Jobby study materials — books, courses, and interview prep.',
       path: '/learning-list',
     })
   }, [])

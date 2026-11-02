@@ -1,4 +1,4 @@
-# Deploy Jobify (free AWS + free domain + GitHub Actions)
+# Deploy Jobby (free AWS + free domain + GitHub Actions)
 
 **Stack:** GitHub Actions builds a Docker image → pushes to GHCR → EC2 pulls it.  
 **Domain:** free `<elastic-ip>.sslip.io` (no signup) or optional DuckDNS + Caddy HTTPS.  

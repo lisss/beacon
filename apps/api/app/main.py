@@ -40,7 +40,7 @@ async def lifespan(_: FastAPI):
 settings = get_settings()
 
 app = FastAPI(
-    title="Jobify API",
+    title="Jobby API",
     description="Job + learning insights aggregator",
     version="0.1.0",
     lifespan=lifespan,

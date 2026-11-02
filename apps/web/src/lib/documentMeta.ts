@@ -13,7 +13,7 @@ export function setDocumentMeta({
 
   const desc =
     description ??
-    'Jobify shows what a job role typically needs, compares it to your skills, and builds a study plan.'
+    'Jobby shows what a job role typically needs, compares it to your skills, and builds a study plan.'
   let meta = document.querySelector('meta[name="description"]')
   if (!meta) {
     meta = document.createElement('meta')

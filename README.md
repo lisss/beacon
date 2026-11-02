@@ -1,4 +1,4 @@
-# Jobify
+# Jobby
 
 Job & learning aggregator: search a role, see matching jobs, skill frequency, CV gaps, salary distribution, books, courses, GitHub projects, certifications, and a study roadmap.
 

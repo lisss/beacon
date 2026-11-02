@@ -57,7 +57,7 @@ SG_NAME="jobby-web"
 VPC_ID="$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true --query 'Vpcs[0].VpcId' --output text)"
 SG_ID="$(aws ec2 describe-security-groups --filters "Name=group-name,Values=$SG_NAME" "Name=vpc-id,Values=$VPC_ID" --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null || true)"
 if [[ -z "$SG_ID" || "$SG_ID" == "None" ]]; then
-  SG_ID="$(aws ec2 create-security-group --group-name "$SG_NAME" --description "Jobify HTTP/SSH" --vpc-id "$VPC_ID" --query GroupId --output text)"
+  SG_ID="$(aws ec2 create-security-group --group-name "$SG_NAME" --description "Jobby HTTP/SSH" --vpc-id "$VPC_ID" --query GroupId --output text)"
   MYIP="$(curl -4 -fsS https://checkip.amazonaws.com | tr -d '[:space:]')"
   aws ec2 authorize-security-group-ingress --group-id "$SG_ID" --ip-permissions \
     "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=0.0.0.0/0,Description=ssh-ci-and-admin}]" \

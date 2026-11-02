@@ -13,7 +13,7 @@ import httpx
 from app.core.config import get_settings
 from app.models.schemas import ResourceOut, ResourceReview
 
-USER_AGENT = "Jobify/1.0 (learning insights; +https://github.com/jobby)"
+USER_AGENT = "Jobby/1.0 (learning insights; +https://github.com/jobby)"
 TIMEOUT = 8.0
 
 # Tiny in-process TTL cache so repeat insights don't hammer public APIs.
