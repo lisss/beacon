@@ -89,7 +89,13 @@ jobs:
               echo "IMAGE=${IMAGE}" >> .env
             fi
 
-            docker compose -f docker-compose.prod.yml --env-file .env pull
-            docker compose -f docker-compose.prod.yml --env-file .env up -d --remove-orphans
+            # Keep DuckDNS updater running when a token is configured on the host.
+            COMPOSE=(docker compose -f docker-compose.prod.yml --env-file .env)
+            if grep -q '^DUCKDNS_TOKEN=.\+' .env 2>/dev/null; then
+              COMPOSE+=(--profile duckdns)
+            fi
+
+            "${COMPOSE[@]}" pull
+            "${COMPOSE[@]}" up -d --remove-orphans
             docker image prune -f
-            docker compose -f docker-compose.prod.yml --env-file .env ps
+            "${COMPOSE[@]}" ps
