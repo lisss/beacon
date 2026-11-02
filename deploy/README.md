@@ -1,8 +1,16 @@
 # Deploy Jobify (free AWS + free domain + GitHub Actions)
 
 **Stack:** GitHub Actions builds a Docker image → pushes to GHCR → EC2 pulls it.  
-**Domain:** free `*.duckdns.org` subdomain + Caddy HTTPS.  
+**Domain:** free `<elastic-ip>.sslip.io` (no signup) or optional DuckDNS + Caddy HTTPS.  
 **Host:** AWS free-tier EC2 (`t3.micro` / `t2.micro`).
+
+**Fast path (scripted):** after you export AWS keys, run:
+
+```bash
+export AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... AWS_DEFAULT_REGION=us-east-1
+./deploy/provision-ec2.sh
+./deploy/finish-remote.sh   # starts app + sets GH Actions secrets if `gh` is logged in
+```
 
 > AWS free tier changed in mid-2025. New accounts get credits (~$100–$200 for up to 6 months). Older accounts may still have the classic 12‑month `t2.micro`/`t3.micro` offer. Watch Billing → Free Tier.
 

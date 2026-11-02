@@ -6,13 +6,16 @@
 #   docker compose -f docker-compose.prod.yml --env-file .env up -d
 
 services:
+  # Optional — only starts when DUCKDNS_TOKEN is set.
+  # Otherwise use DOMAIN=<elastic-ip>.sslip.io (no signup).
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
     container_name: jobify-duckdns
     restart: unless-stopped
+    profiles: ["duckdns"]
     environment:
-      SUBDOMAINS: ${DUCKDNS_SUBDOMAIN}
-      TOKEN: ${DUCKDNS_TOKEN}
+      SUBDOMAINS: ${DUCKDNS_SUBDOMAIN:-}
+      TOKEN: ${DUCKDNS_TOKEN:-}
       TZ: UTC
       UPDATE_IP: ipv4
     logging:
