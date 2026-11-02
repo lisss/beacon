@@ -60,6 +60,17 @@ def api_root() -> dict:
     return {"name": "jobify-api", "docs": "/docs"}
 
 
+def _spa_html() -> FileResponse:
+    # Always revalidate HTML so deploys pick up new hashed JS/CSS immediately.
+    return FileResponse(
+        STATIC_DIR / "index.html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+        },
+    )
+
+
 if STATIC_DIR.is_dir():
     assets_dir = STATIC_DIR / "assets"
     if assets_dir.is_dir():
@@ -67,7 +78,7 @@ if STATIC_DIR.is_dir():
 
     @app.get("/")
     def spa_index() -> FileResponse:
-        return FileResponse(STATIC_DIR / "index.html")
+        return _spa_html()
 
     @app.get("/{full_path:path}")
     def spa_fallback(full_path: str) -> FileResponse:
@@ -75,8 +86,12 @@ if STATIC_DIR.is_dir():
         candidate = (STATIC_DIR / full_path).resolve()
         # Prevent path traversal outside STATIC_DIR.
         if candidate.is_file() and str(candidate).startswith(str(STATIC_DIR.resolve())):
-            return FileResponse(candidate)
-        return FileResponse(STATIC_DIR / "index.html")
+            # Fingerprinted /assets/* can be cached; other static files stay short-lived.
+            headers = {}
+            if "/assets/" in str(candidate) or candidate.parent == assets_dir:
+                headers["Cache-Control"] = "public, max-age=31536000, immutable"
+            return FileResponse(candidate, headers=headers)
+        return _spa_html()
 else:
 
     @app.get("/")

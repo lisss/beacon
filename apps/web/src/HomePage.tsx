@@ -343,7 +343,7 @@ export function HomePage() {
       </header>
 
       <section className="panel px-6 py-9 sm:px-9 sm:py-11">
-        <h2 className="whitespace-nowrap text-[clamp(0.95rem,2.9vw,1.75rem)] font-semibold tracking-tight text-[var(--ink)]">
+        <h2 className="whitespace-nowrap text-[clamp(0.95rem,2.9vw,1.75rem)] font-semibold tracking-tight text-[var(--brand)]">
           See what a role needs — and what to learn next
         </h2>
         <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--muted)] sm:text-base">
