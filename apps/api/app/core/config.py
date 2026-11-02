@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     google_books_api_key: str = ""
     github_token: str = ""
     # Public origin for canonical URLs, sitemap, Open Graph (no trailing slash).
-    public_site_url: str = "https://getcasty.duckdns.org"
+    public_site_url: str = "https://getcast.duckdns.org"
     # Optional Google Search Console meta-tag token (HTML-tag verification method).
     google_site_verification: str = ""
 

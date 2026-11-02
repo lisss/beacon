@@ -1,4 +1,4 @@
-const SITE = 'https://getcasty.duckdns.org'
+const SITE = 'https://getcast.duckdns.org'
 
 export function setDocumentMeta({
   title,

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /learning-list
 
-Sitemap: https://getcasty.duckdns.org/sitemap.xml
+Sitemap: https://getcast.duckdns.org/sitemap.xml
