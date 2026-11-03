@@ -1,5 +1,5 @@
 """
-casty API — FastAPI backend.
+pathquire API — FastAPI backend.
 
 Local:
   source .venv/bin/activate

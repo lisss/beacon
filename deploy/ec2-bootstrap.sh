@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # First-boot / one-shot setup for Ubuntu 24.04 on a free-tier EC2 instance.
 # Run as root (via user-data) or with sudo after SSH:
-#   curl -fsSL https://raw.githubusercontent.com/lisss/casty/main/deploy/ec2-bootstrap.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/lisss/pathquire/main/deploy/ec2-bootstrap.sh | sudo bash
 set -euo pipefail
 
-REPO_URL="${REPO_URL:-https://github.com/lisss/casty.git}"
-APP_DIR="${APP_DIR:-/opt/casty}"
+REPO_URL="${REPO_URL:-https://github.com/lisss/pathquire.git}"
+APP_DIR="${APP_DIR:-/opt/pathquire}"
 APP_USER="${APP_USER:-ubuntu}"
 
 export DEBIAN_FRONTEND=noninteractive

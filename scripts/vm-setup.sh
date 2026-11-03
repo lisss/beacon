@@ -3,8 +3,8 @@
 # Usage: bash vm-setup.sh [git-repo-url]
 set -euo pipefail
 
-REPO_URL="${1:-https://github.com/lisss/casty.git}"
-APP_DIR="${HOME}/casty"
+REPO_URL="${1:-https://github.com/lisss/pathquire.git}"
+APP_DIR="${HOME}/pathquire"
 PORT="${PORT:-8000}"
 
 if command -v apt-get >/dev/null 2>&1; then
@@ -53,13 +53,13 @@ if ! docker info >/dev/null 2>&1; then
   DOCKER=(sudo docker)
 fi
 
-"${DOCKER[@]}" build -t casty:latest .
-"${DOCKER[@]}" rm -f casty 2>/dev/null || true
-"${DOCKER[@]}" run -d --name casty --restart unless-stopped \
+"${DOCKER[@]}" build -t pathquire:latest .
+"${DOCKER[@]}" rm -f pathquire 2>/dev/null || true
+"${DOCKER[@]}" run -d --name pathquire --restart unless-stopped \
   -p "${PORT}:8000" \
   -e API_CORS_ORIGINS='*' \
-  -e DATABASE_URL='sqlite:////tmp/casty.db' \
-  casty:latest
+  -e DATABASE_URL='sqlite:////tmp/pathquire.db' \
+  pathquire:latest
 
 echo
 echo "App should be at: http://$(curl -s --max-time 3 ifconfig.me 2>/dev/null || echo YOUR_PUBLIC_IP):${PORT}/"

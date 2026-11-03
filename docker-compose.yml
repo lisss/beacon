@@ -1,18 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: casty-db
+    container_name: pathquire-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: casty
-      POSTGRES_PASSWORD: casty
-      POSTGRES_DB: casty
+      POSTGRES_USER: pathquire
+      POSTGRES_PASSWORD: pathquire
+      POSTGRES_DB: pathquire
     ports:
       - "5432:5432"
     volumes:
       - casty_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U casty -d casty"]
+      test: ["CMD-SHELL", "pg_isready -U pathquire -d pathquire"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: casty-api
+    container_name: pathquire-api
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       PORT: "8000"
-      DATABASE_URL: postgresql+psycopg://casty:casty@db:5432/casty
+      DATABASE_URL: postgresql+psycopg://pathquire:pathquire@db:5432/pathquire
       API_CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000
       REMOTIVE_ENABLED: "true"
       # Optional keys — pass through from host .env if present

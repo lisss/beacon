@@ -1,5 +1,5 @@
 /** Bump when default open/closed rules change so old prefs don't stick. */
-const KEY = 'cast.sections.v4'
+const KEY = 'pathquire.sections.v4'
 
 type CollapseMap = Record<string, boolean>
 

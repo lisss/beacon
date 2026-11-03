@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Point the live EC2 stack at a free DuckDNS hostname.
 # Usage:
-#   DUCKDNS_SUBDOMAIN=casty DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
+#   DUCKDNS_SUBDOMAIN=pathquire DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="$ROOT/deploy/.provisioned.env"
 KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
 
-: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. casty)}"
+: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. pathquire)}"
 : "${DUCKDNS_TOKEN:?set DUCKDNS_TOKEN}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -25,21 +25,17 @@ echo "==> Update DuckDNS → ${EC2_HOST}"
 curl -fsS "https://www.duckdns.org/update?domains=${DUCKDNS_SUBDOMAIN}&token=${DUCKDNS_TOKEN}&ip=${EC2_HOST}"
 echo
 
-APP_DIR="${APP_DIR:-/opt/casty}"
-IMAGE_REF="${IMAGE:-ghcr.io/lisss/casty:latest}"
+APP_DIR="${APP_DIR:-/opt/pathquire}"
+IMAGE_REF="${IMAGE:-ghcr.io/lisss/pathquire:latest}"
 
-echo "==> Ensure app dir ${APP_DIR} (migrate from /opt/jobify if needed)"
+echo "==> Ensure app dir ${APP_DIR} (migrate older dirs if needed)"
 "${SSH[@]}" "set -e
-if [ -d /opt/jobify ] && [ ! -e '${APP_DIR}' ]; then
-  sudo mv /opt/jobify '${APP_DIR}'
-fi
-mkdir -p '${APP_DIR}'
-# Prefer the Casty GHCR image; fall back to the previous jobify tag if missing.
-if ! docker pull '${IMAGE_REF}' >/dev/null 2>&1; then
-  if docker pull ghcr.io/lisss/jobify:latest >/dev/null 2>&1; then
-    echo 'Using fallback image ghcr.io/lisss/jobify:latest until casty image is published'
+for old in /opt/cast /opt/casty /opt/jobify; do
+  if [ -d \"\$old\" ] && [ ! -e '${APP_DIR}' ]; then
+    sudo mv \"\$old\" '${APP_DIR}'
   fi
-fi
+done
+mkdir -p '${APP_DIR}'
 "
 
 echo "==> Rewrite remote .env DOMAIN=${DOMAIN} (dir ${APP_DIR})"
@@ -55,13 +51,20 @@ EOF
 
 echo "==> Restart with duckdns profile"
 "${SSH[@]}" "cd '${APP_DIR}' &&
-  (git remote set-url origin https://github.com/lisss/casty.git 2>/dev/null || true) &&
+  (git remote set-url origin https://github.com/lisss/pathquire.git 2>/dev/null || true) &&
   git fetch --depth 1 origin main &&
   git reset --hard origin/main &&
   if ! docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env pull; then
-    sed -i 's|^IMAGE=.*|IMAGE=ghcr.io/lisss/jobify:latest|' .env
+    for fallback in ghcr.io/lisss/cast:latest ghcr.io/lisss/jobify:latest; do
+      if docker pull \"\$fallback\"; then
+        sed -i \"s|^IMAGE=.*|IMAGE=\${fallback}|\" .env
+        break
+      fi
+    done
     docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env pull
   fi &&
+  # Drop old containers that may still hold :80/:443
+  docker rm -f cast-caddy cast-api cast-duckdns casty-caddy casty-api casty-duckdns jobify-caddy jobify-api jobify-duckdns 2>/dev/null || true
   docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env up -d --force-recreate --remove-orphans"
 
 # persist locally

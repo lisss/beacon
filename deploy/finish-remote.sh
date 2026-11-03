@@ -28,9 +28,9 @@ for i in $(seq 1 36); do
   fi
 done
 
-echo "==> Wait for docker + /opt/casty"
+echo "==> Wait for docker + /opt/pathquire"
 for i in $(seq 1 36); do
-  if "${SSH[@]}" 'command -v docker >/dev/null && test -d /opt/casty/.git'; then
+  if "${SSH[@]}" 'command -v docker >/dev/null && test -d /opt/pathquire/.git'; then
     break
   fi
   sleep 5
@@ -41,15 +41,15 @@ for i in $(seq 1 36); do
 done
 
 echo "==> Write remote .env"
-"${SSH[@]}" "cat > /opt/casty/.env" <<EOF
+"${SSH[@]}" "cat > /opt/pathquire/.env" <<EOF
 DOMAIN=${DOMAIN}
 IMAGE=${IMAGE}
 REMOTIVE_ENABLED=true
 EOF
-"${SSH[@]}" 'chmod 600 /opt/casty/.env'
+"${SSH[@]}" 'chmod 600 /opt/pathquire/.env'
 
 echo "==> Pull & start"
-"${SSH[@]}" 'cd /opt/casty && git fetch --depth 1 origin main && git reset --hard origin/main && docker compose -f docker-compose.prod.yml --env-file .env pull && docker compose -f docker-compose.prod.yml --env-file .env up -d'
+"${SSH[@]}" 'cd /opt/pathquire && git fetch --depth 1 origin main && git reset --hard origin/main && docker compose -f docker-compose.prod.yml --env-file .env pull && docker compose -f docker-compose.prod.yml --env-file .env up -d'
 
 echo "==> Health"
 for i in $(seq 1 30); do
@@ -60,16 +60,16 @@ for i in $(seq 1 30); do
   sleep 5
   if [[ "$i" -eq 30 ]]; then
     echo "HTTPS not healthy yet — try: curl -v https://${DOMAIN}/api/health"
-    "${SSH[@]}" 'cd /opt/casty && docker compose -f docker-compose.prod.yml --env-file .env ps'
+    "${SSH[@]}" 'cd /opt/pathquire && docker compose -f docker-compose.prod.yml --env-file .env ps'
   fi
 done
 
 if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
   echo "==> GitHub Actions secrets"
-  gh secret set EC2_HOST --repo lisss/casty --body "$EC2_HOST"
-  gh secret set EC2_USER --repo lisss/casty --body "$EC2_USER"
-  gh secret set EC2_SSH_KEY --repo lisss/casty < "$KEY_PATH"
-  gh variable set DEPLOY_ENABLED --repo lisss/casty --body true
+  gh secret set EC2_HOST --repo lisss/pathquire --body "$EC2_HOST"
+  gh secret set EC2_USER --repo lisss/pathquire --body "$EC2_USER"
+  gh secret set EC2_SSH_KEY --repo lisss/pathquire < "$KEY_PATH"
+  gh variable set DEPLOY_ENABLED --repo lisss/pathquire --body true
   echo "Deploy on push to main is enabled."
 else
   echo "gh not authenticated — set secrets manually (see deploy/README.md)"

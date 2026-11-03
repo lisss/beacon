@@ -8,8 +8,8 @@ type LogoProps = {
   asHeading?: boolean
 }
 
-/** Casty mark (gap bridge) mark only (for reuse next to links, etc.). */
-export function CastyMark({ className = '' }: { className?: string }) {
+/** Pathquire mark (gap bridge) mark only (for reuse next to links, etc.). */
+export function PathquireMark({ className = '' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -34,18 +34,18 @@ export function CastyMark({ className = '' }: { className?: string }) {
 }
 
 /**
- * Casty mark (gap bridge) mark with wordmark.
+ * Pathquire mark (gap bridge) mark with wordmark.
  * Color via currentColor (shared with wordmark).
  */
 export function Logo({
   className = '',
-  title = 'Casty',
+  title = 'Pathquire',
   onClick,
   asHeading = false,
 }: LogoProps) {
   const inner = (
     <>
-      <CastyMark className="logo-mark" />
+      <PathquireMark className="logo-mark" />
       <span className="logo-wordmark">{title}</span>
     </>
   )

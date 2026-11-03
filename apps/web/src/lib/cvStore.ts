@@ -1,7 +1,7 @@
 import type { StoredCv } from '@/lib/api'
 
-const CV_META_KEY = 'casty.cv.meta.v1'
-const CV_DB = 'casty-cv'
+const CV_META_KEY = 'pathquire.cv.meta.v1'
+const CV_DB = 'pathquire-cv'
 const CV_STORE = 'files'
 const CV_FILE_KEY = 'current'
 

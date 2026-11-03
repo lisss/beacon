@@ -13,7 +13,7 @@ import httpx
 from app.core.config import get_settings
 from app.models.schemas import ResourceOut, ResourceReview
 
-USER_AGENT = "casty/1.0 (learning insights; +https://github.com/casty)"
+USER_AGENT = "pathquire/1.0 (learning insights; +https://github.com/pathquire)"
 TIMEOUT = 8.0
 
 # Tiny in-process TTL cache so repeat insights don't hammer public APIs.

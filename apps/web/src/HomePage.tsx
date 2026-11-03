@@ -20,7 +20,7 @@ import {
   suggestRoles,
 } from '@/lib/api'
 import { InsightsPanel } from '@/components/InsightsPanel'
-import { Logo, CastyMark } from '@/components/Logo'
+import { Logo, PathquireMark } from '@/components/Logo'
 import { Typeahead } from '@/components/Typeahead'
 import {
   clearCvFile,
@@ -31,7 +31,7 @@ import {
 } from '@/lib/cvStore'
 import { todoOpenCount } from '@/lib/todoStore'
 
-const STORAGE_KEY = 'casty.ui.v1'
+const STORAGE_KEY = 'pathquire.ui.v1'
 
 type PersistedUi = {
   query?: string
@@ -76,7 +76,7 @@ export function HomePage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Casty — role requirements, skills gaps & learning paths',
+      title: 'Pathquire — role requirements, skills gaps & learning paths',
       description:
         'See what a job role typically needs, compare it to your CV or skills, and get a study plan with books, courses, and interview prep.',
       path: '/',
@@ -112,10 +112,10 @@ export function HomePage() {
   useEffect(() => {
     const sync = () => setTodoCount(todoOpenCount())
     sync()
-    window.addEventListener('casty-todo-changed', sync)
+    window.addEventListener('pathquire-todo-changed', sync)
     window.addEventListener('storage', sync)
     return () => {
-      window.removeEventListener('casty-todo-changed', sync)
+      window.removeEventListener('pathquire-todo-changed', sync)
       window.removeEventListener('storage', sync)
     }
   }, [])
@@ -352,7 +352,7 @@ export function HomePage() {
       <header className="mb-12 flex flex-wrap items-center justify-between gap-4">
         <Logo asHeading />
         <Link to="/learning-list" className="todo-link">
-          <CastyMark className="todo-link-mark" />
+          <PathquireMark className="todo-link-mark" />
           <span className="todo-link-label">Learning list</span>
           {todoCount > 0 ? (
             <span className="todo-link-count" aria-label={`${todoCount} open items`}>
@@ -551,7 +551,7 @@ export function HomePage() {
           ))}
         </ul>
         <p className="mt-4 max-w-2xl leading-relaxed">
-          Casty is a free career learning planner: compare job role requirements to your
+          Pathquire is a free career learning planner: compare job role requirements to your
           skills or CV, then get books, courses, certifications, and interview prep in one
           roadmap.
         </p>
