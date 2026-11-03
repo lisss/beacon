@@ -5,8 +5,6 @@ from sqlmodel import Field, SQLModel
 
 
 class CvUpload(SQLModel, table=True):
-    """CV file stored for an anonymous browser session."""
-
     __tablename__ = "cv_upload"
 
     id: str = Field(primary_key=True)

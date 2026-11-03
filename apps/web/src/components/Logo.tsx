@@ -4,11 +4,9 @@ type LogoProps = {
   className?: string
   title?: string
   onClick?: () => void
-  /** Use an h1 for the homepage brand (SEO). */
   asHeading?: boolean
 }
 
-/** Pathquire mark (gap bridge) mark only (for reuse next to links, etc.). */
 export function PathquireMark({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -33,10 +31,6 @@ export function PathquireMark({ className = '' }: { className?: string }) {
   )
 }
 
-/**
- * Pathquire mark (gap bridge) mark with wordmark.
- * Color via currentColor (shared with wordmark).
- */
 export function Logo({
   className = '',
   title = 'Pathquire',

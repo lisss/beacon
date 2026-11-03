@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# After provision-ec2.sh: configure .env on the box, pull image, start stack,
-# and (if gh is logged in) set Actions secrets + DEPLOY_ENABLED.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-# Canonical skill vocabulary used for extraction + matching.
 SKILL_ALIASES: dict[str, str] = {
     "javascript": "JavaScript",
     "typescript": "TypeScript",
@@ -135,7 +134,6 @@ def _family_mates(skill: str) -> set[str]:
         if any(member.lower() == key for member in family):
             mates.update(family)
     mates.discard(skill)
-    # Also drop case-variants of self
     return {m for m in mates if m.lower() != key}
 
 
@@ -160,7 +158,6 @@ def classify_cv_against_requirements(
                 seen_matched.add(skill)
                 matched.append(skill)
             continue
-        # Related stack skill → partial cover
         mates = {m.lower() for m in _family_mates(skill)}
         if cv_lower & mates:
             if skill not in seen_partial:
@@ -211,7 +208,6 @@ def relevant_skills_for_role(
     *,
     role_title: str = "",
 ) -> list[str]:
-    """Keep only CV skills that match the role (exact or related family)."""
     allowed_lower: set[str] = set()
     display_for: dict[str, str] = {}
 

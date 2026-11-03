@@ -1,5 +1,3 @@
-"""SEO helpers: slugs, sitemap entries, crawlable role landing HTML."""
-
 from __future__ import annotations
 
 import html
@@ -24,7 +22,6 @@ def title_from_slug(slug: str) -> str | None:
     for title in ROLE_TITLES:
         if role_slug(title) == needle:
             return title
-    # Soft match: replace hyphens with spaces
     soft = needle.replace("-", " ")
     for title in ROLE_TITLES:
         if title.lower() == soft:
@@ -33,7 +30,6 @@ def title_from_slug(slug: str) -> str | None:
 
 
 def sitemap_role_slugs() -> list[tuple[str, str]]:
-    """Unique (slug, title) pairs for the sitemap."""
     seen: set[str] = set()
     out: list[tuple[str, str]] = []
     for title in ROLE_TITLES:

@@ -14,11 +14,8 @@ export function CollapsibleSection({
   id: string
   title: string
   icon?: SectionIconName
-  /** Short teaser shown while collapsed */
   summary?: ReactNode
-  /** Right-side meta (e.g. hours) always visible in the header */
   meta?: ReactNode
-  /** Initial open state when the user has never toggled this section */
   defaultOpen?: boolean
   children: ReactNode
 }) {

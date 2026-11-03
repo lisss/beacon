@@ -16,12 +16,10 @@ from app.models.schemas import ResourceOut, ResourceReview
 USER_AGENT = "pathquire/1.0 (learning insights; +https://github.com/pathquire)"
 TIMEOUT = 8.0
 
-# Tiny in-process TTL cache so repeat insights don't hammer public APIs.
 _CACHE: dict[str, tuple[float, Any]] = {}
 _CACHE_TTL_SEC = 60 * 30
 
-# Only surface materials hosted on these trusted origins.
-# Books: publishers/retailers only (no Open Library).
+# Publishers and retailers only — Open Library links are rewritten, never shown.
 _TRUSTED_HOST_SUFFIXES = (
     "goodreads.com",
     "amazon.com",
@@ -85,7 +83,6 @@ def _host_trusted(url: str) -> bool:
     host = (urlparse(url).hostname or "").lower()
     if not host:
         return False
-    # Reject generic web search pages posing as resources.
     path = (urlparse(url).path or "").lower()
     if "google.com" in host and "/search" in path:
         return False
@@ -101,14 +98,10 @@ def _classic_meta(title: str) -> dict[str, Any] | None:
     return None
 
 
-def _sane_book_year(title: str, year: Any, authors: list[str] | None = None) -> int | None:
-    """Return a trusted publication year or None if the catalog year is nonsense."""
+def _sane_book_year(title: str, year: Any, _authors: list[str] | None = None) -> int | None:
+    """Return a trusted publication year, or None when the catalog year is nonsense."""
     classic = _classic_meta(title)
-    authors_l = " ".join(authors or []).lower()
     if classic:
-        if classic.get("author") and classic["author"] not in authors_l and authors_l:
-            # Title collision without the expected author — still prefer classic year if close.
-            pass
         return int(classic["year"])
     try:
         y = int(year)
@@ -133,7 +126,6 @@ def _book_quality_ok(
     if _classic_meta(title):
         return True
     if year is None:
-        # Allow strong ratings even without a year.
         return bool(rating and rating >= 4.2 and rating_count >= 15)
     if rating and rating >= 4.0 and rating_count >= 8:
         return True
@@ -141,14 +133,12 @@ def _book_quality_ok(
         return True
     if edition_count >= 8 and year >= 1980:
         return True
-    # Recent technical books with modest ratings still OK if year is sane.
     if year >= 2015 and (rating is None or rating >= 3.5):
         return True
     return False
 
 
 def _github_fresh(pushed_at: str | None, *, max_years: float = 2.0) -> bool:
-    """Require repo activity within the last 1–2 years (default: 2)."""
     if not pushed_at:
         return False
     try:
@@ -161,7 +151,6 @@ def _github_fresh(pushed_at: str | None, *, max_years: float = 2.0) -> bool:
 
 
 def _book_store_url(title: str, authors: list[str] | None = None, publisher: str = "") -> str:
-    """Link books to Goodreads / Amazon / Manning / O'Reilly — never Open Library."""
     pub = (publisher or "").lower()
     author = (authors or [""])[0]
     q = quote_plus(f"{title} {author}".strip())
@@ -180,11 +169,9 @@ def _book_store_url(title: str, authors: list[str] | None = None, publisher: str
         return f"https://www.wiley.com/en-us/search?pq={title_q}"
     if "addison" in pub or "pearson" in pub or "prentice" in pub:
         return f"https://www.informit.com/search/index.aspx?query={title_q}"
-    # Default: Goodreads (ratings) — Amazon as secondary via site search pattern
     return f"https://www.goodreads.com/search?utf8=%E2%9C%93&query={q}"
 
 
-# Curated books on trusted retailer/publisher pages (high signal).
 _TRUSTED_BOOK_CATALOG: list[dict[str, Any]] = [
     {
         "keys": ("python", "backend", "software"),
@@ -346,7 +333,7 @@ def _trusted_books_for_query(role: str, skills: list[str], limit: int = 6) -> li
             rating_count=entry.get("rating_count"),
             skill_hits=_skill_hits(skills_tags, hay, entry["title"], entry["desc"]),
         )
-        value += 6.0  # curated trusted catalog boost
+        value += 6.0  # curated catalog outranks a raw search hit
         picked.append(
             ResourceOut(
                 kind="book",
@@ -363,7 +350,6 @@ def _trusted_books_for_query(role: str, skills: list[str], limit: int = 6) -> li
             )
         )
     if not picked:
-        # Always offer a few evergreen software books from the catalog.
         for entry in _TRUSTED_BOOK_CATALOG[:3]:
             hours = float(entry["hours"])
             picked.append(
@@ -527,7 +513,7 @@ def _skills_from_query(query: str) -> list[str]:
 
 def _book_hours(pages: int | None) -> float:
     if pages and pages > 40:
-        # ~20 pages/hour focused technical reading + notes.
+        # ~20 pages/hour of focused technical reading, notes included.
         return round(max(8.0, min(60.0, pages / 20.0)), 1)
     return 25.0
 
@@ -589,7 +575,6 @@ def _skill_hits(skills: list[str], query: str, title: str = "", desc: str = "") 
 
 
 def _fetch_community_reviews(title: str, limit: int = 5) -> list[ResourceReview]:
-    """Public HN + Reddit snippets (no API key). Up to `limit` items with detail links."""
     title = (title or "").strip()
     if not title or len(title) < 3:
         return []
@@ -600,7 +585,6 @@ def _fetch_community_reviews(title: str, limit: int = 5) -> list[ResourceReview]
 
     reviews: list[ResourceReview] = []
 
-    # Hacker News (Algolia) — stories & comments mentioning the resource.
     try:
         with _client() as client:
             res = client.get(
@@ -677,7 +661,6 @@ def _fetch_community_reviews(title: str, limit: int = 5) -> list[ResourceReview]
         except Exception:
             pass
 
-    # Dedupe by comment text prefix.
     seen: set[str] = set()
     out: list[ResourceReview] = []
     for rev in reviews:
@@ -971,7 +954,6 @@ def _fetch_github_learning(query: str, limit: int = 4) -> list[ResourceOut]:
         desc_l = desc.lower()
         if not _host_trusted(html_url):
             continue
-        # Require recent maintenance (commits / pushes within ~2 years).
         if not _github_fresh(item.get("pushed_at"), max_years=2.0):
             continue
         learningish = any(
@@ -992,12 +974,10 @@ def _fetch_github_learning(query: str, limit: int = 4) -> list[ResourceOut]:
                 "exercises",
             )
         )
-        # Prefer real learning repos; drop popular libraries/frameworks.
         if not learningish:
             continue
         if stars > 80_000 and "primer" not in name_l and "awesome" not in name_l:
             continue
-        # Heuristic course length from repo size/popularity.
         hours = 8.0 if stars < 500 else (12.0 if stars < 5000 else 18.0)
         if "roadmap" in name_l or "awesome" in name_l:
             hours = 10.0
@@ -1198,7 +1178,6 @@ def _fetch_certification_pages(query: str, limit: int = 3) -> list[ResourceOut]:
             )
         )
 
-    # No generic google/search links — only trusted catalog hits above.
     results = rank_resources(filter_trusted_resources(_dedupe(results)))[:limit]
     _cache_set(cache_key, results)
     return results
@@ -1239,7 +1218,6 @@ def _merge_queries(
 
 
 def _fallback_courses(role: str, skills: list[str], limit: int = 6) -> list[ResourceOut]:
-    """High-signal free courses when GitHub/YouTube APIs are unavailable."""
     catalog: list[tuple[tuple[str, ...], ResourceOut]] = [
         (
             ("python", "backend", "django", "flask", "fastapi"),
@@ -1367,7 +1345,6 @@ def _fallback_courses(role: str, skills: list[str], limit: int = 6) -> list[Reso
             )
             picked.append(resource.model_copy(update={"value_score": score, "skills": tip_skills or resource.skills}))
     if not picked:
-        # Generic fallback
         picked = [catalog[3][1], catalog[0][1]]
     return rank_resources(picked)[:limit]
 
@@ -1380,14 +1357,9 @@ def fetch_learning_bundle(
     limit: int = 15,
     blocked_urls: set[str] | None = None,
 ) -> dict[str, list[ResourceOut]]:
-    """Live lookup of books/courses/certs/interview items for role + skills.
-
-    Returns up to `limit` books/courses (UI shows 5, then “explore more”).
-    """
     queries = _queries(role, stack_skills, gap_skills)
     skill_focus = (stack_skills[:3] or gap_skills[:3] or [role])[0]
     blocked = blocked_urls or set()
-    # Cap primary lists for the books/courses “top 5 + more” UI.
     primary_limit = max(limit, 15)
 
     # Books: curated trusted retailers/publishers first; Google Books only as
@@ -1462,7 +1434,6 @@ def fetch_learning_bundle(
         blocked_urls=blocked,
     )[:secondary_limit]
 
-    # Enrich top resources with community comments (5 each).
     books = _attach_reviews(books[:primary_limit], per_item=5)
     courses = _attach_reviews(courses[:primary_limit], per_item=5)
     certifications = _attach_reviews(certifications[:secondary_limit], per_item=5)
@@ -1485,7 +1456,6 @@ def fetch_resources_for_topics(
     kinds: set[str] | None = None,
     limit_per_topic: int = 3,
 ) -> list[ResourceOut]:
-    """Fetch mixed materials for roadmap steps."""
     kinds = kinds or {"book", "course"}
     out: list[ResourceOut] = []
     for topic in topics:

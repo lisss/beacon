@@ -80,7 +80,6 @@ function FeedbackButtons({
         verdict,
       })
     } catch {
-      // Local TODO already updated; server sync is best-effort.
     } finally {
       setBusy(false)
     }
@@ -168,7 +167,6 @@ function ResourceList({
   icon?: SectionIconName
   hiddenUrls: Set<string>
   onHide: (url: string) => void
-  /** When set, show this many first; rest behind “Want to explore more?” */
   initialLimit?: number
 }) {
   const [showMore, setShowMore] = useState(false)

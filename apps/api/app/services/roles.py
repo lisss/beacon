@@ -4,7 +4,6 @@ from app.services.jobs import seniority_rank
 from app.services.skills import extract_skills
 
 ROLE_TITLES: list[str] = [
-    # Software / general
     "Software Engineer",
     "Mid-level Software Engineer",
     "Senior Software Engineer",
@@ -15,7 +14,6 @@ ROLE_TITLES: list[str] = [
     "Senior Full Stack Engineer",
     "Full Stack Developer",
     "Senior Full Stack Developer",
-    # Frontend
     "Frontend Engineer",
     "Senior Frontend Engineer",
     "Frontend Developer",
@@ -30,7 +28,6 @@ ROLE_TITLES: list[str] = [
     "Angular Developer",
     "UI Engineer",
     "Web Developer",
-    # Backend
     "Backend Engineer",
     "Senior Backend Engineer",
     "Backend Developer",
@@ -47,7 +44,6 @@ ROLE_TITLES: list[str] = [
     "API Engineer",
     ".NET Developer",
     "Senior .NET Developer",
-    # Mobile
     "Mobile Developer",
     "Senior Mobile Developer",
     "iOS Developer",
@@ -55,7 +51,6 @@ ROLE_TITLES: list[str] = [
     "Android Developer",
     "Senior Android Developer",
     "Flutter Developer",
-    # Data / ML
     "Data Engineer",
     "Senior Data Engineer",
     "Data Scientist",
@@ -68,7 +63,6 @@ ROLE_TITLES: list[str] = [
     "AI Engineer",
     "Senior AI Engineer",
     "Analytics Engineer",
-    # Infra / DevOps / Security
     "DevOps Engineer",
     "Senior DevOps Engineer",
     "SRE",
@@ -82,7 +76,6 @@ ROLE_TITLES: list[str] = [
     "Security Engineer",
     "Senior Security Engineer",
     "Cybersecurity Engineer",
-    # QA / Product / Design-adjacent eng
     "QA Engineer",
     "Senior QA Engineer",
     "Quality Assurance Engineer",
@@ -101,12 +94,10 @@ ROLE_TITLES: list[str] = [
 
 
 def suggest_role_titles(q: str = "", limit: int = 12) -> list[str]:
-    """Typeahead for role titles only — no companies or job-board listings."""
     needle = q.strip().lower()
     limit = max(1, min(limit, 30))
 
     if not needle:
-        # Prefer mid/senior-friendly defaults when the field is empty
         defaults = [
             "Software Engineer",
             "Senior Software Engineer",
@@ -400,7 +391,6 @@ def requirements_for_role(role: str) -> list[tuple[str, float]]:
     }
 
     if not by_name:
-        # Generic baseline if nothing matched (major technical skills only)
         by_name = {
             "Data Structures": 70,
             "Algorithms": 65,

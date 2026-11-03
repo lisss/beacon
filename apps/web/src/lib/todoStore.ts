@@ -21,9 +21,7 @@ function writeAll(items: TodoItem[]) {
   try {
     localStorage.setItem(TODO_KEY, JSON.stringify(items))
     window.dispatchEvent(new Event('pathquire-todo-changed'))
-  } catch {
-    // ignore quota / private mode
-  }
+  } catch {}
 }
 
 export function listTodoLocal(): TodoItem[] {
@@ -34,7 +32,6 @@ export function todoOpenCount(): number {
   return listTodoLocal().filter((i) => !i.done).length
 }
 
-/** empty = no items; none = none done; partial = some done; all = all done */
 export type TodoProgress = 'empty' | 'none' | 'partial' | 'all'
 
 export function todoProgress(): TodoProgress {

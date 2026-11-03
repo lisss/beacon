@@ -1,13 +1,4 @@
-# Production stack for a free-tier EC2 box.
-# Image is built on GitHub Actions and pulled from GHCR (not built on the server).
-#
-# Usage on the server:
-#   docker compose -f docker-compose.prod.yml --env-file .env pull
-#   docker compose -f docker-compose.prod.yml --env-file .env up -d
-
 services:
-  # Optional — only starts when DUCKDNS_TOKEN is set.
-  # Otherwise use DOMAIN=<elastic-ip>.sslip.io (no signup).
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
     container_name: pathquire-duckdns

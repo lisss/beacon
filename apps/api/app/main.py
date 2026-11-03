@@ -21,7 +21,6 @@ from app.services.seo import (
 )
 from sqlmodel import Session
 
-# Built Vite app (copied next to the API in Docker / Render builds).
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
@@ -135,9 +134,7 @@ if STATIC_DIR.is_dir():
 
     @app.get("/{full_path:path}")
     def spa_fallback(full_path: str) -> FileResponse:
-        """Serve built files when present; otherwise index.html for client routes."""
         candidate = (STATIC_DIR / full_path).resolve()
-        # Prevent path traversal outside STATIC_DIR.
         if candidate.is_file() and str(candidate).startswith(str(STATIC_DIR.resolve())):
             # Fingerprinted /assets/* can be cached; other static files stay short-lived.
             headers = {}

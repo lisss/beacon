@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Run on a fresh Oracle Always Free or AWS free-tier Linux VM (Ubuntu/Oracle Linux).
-# Usage: bash vm-setup.sh [git-repo-url]
 set -euo pipefail
 
 REPO_URL="${1:-https://github.com/lisss/pathquire.git}"
@@ -10,7 +8,6 @@ PORT="${PORT:-8000}"
 if command -v apt-get >/dev/null 2>&1; then
   sudo apt-get update -y
   sudo apt-get install -y git ca-certificates curl
-  # Docker (Ubuntu)
   if ! command -v docker >/dev/null 2>&1; then
     curl -fsSL https://get.docker.com | sudo sh
     sudo usermod -aG docker "$USER" || true
@@ -31,7 +28,6 @@ fi
 if command -v iptables >/dev/null 2>&1; then
   sudo iptables -I INPUT -p tcp --dport "${PORT}" -j ACCEPT || true
   sudo iptables -I INPUT -p tcp --dport 80 -j ACCEPT || true
-  # Persist on Oracle Linux if available
   if command -v netfilter-persistent >/dev/null 2>&1; then
     sudo netfilter-persistent save || true
   elif [[ -f /etc/iptables/rules.v4 ]]; then

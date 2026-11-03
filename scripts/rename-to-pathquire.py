@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Rename Casty/Cast/getcast brand strings to Pathquire."""
 from __future__ import annotations
 
 import re

@@ -25,12 +25,10 @@ class ResourceOut(BaseModel):
     skills: list[str] = Field(default_factory=list)
     description: str = ""
     estimated_hours: Optional[float] = None
-    # Higher = more valuable for this role/skill mix (used for ranking).
     value_score: float = 0.0
     rating: Optional[float] = None
     rating_count: Optional[int] = None
     reviews: list[ResourceReview] = Field(default_factory=list)
-    # Short guidance for how to use this resource in a study plan.
     study_tip: str = ""
 
 
@@ -66,7 +64,6 @@ class SkillsForRoleRequest(BaseModel):
 class InsightsResponse(BaseModel):
     query: str
     location: str
-    # Position requirements (importance in `percentage`)
     requirements: list[SkillStat]
     matched_skills: list[str] = Field(default_factory=list)
     partial_skills: list[str] = Field(default_factory=list)
@@ -78,7 +75,6 @@ class InsightsResponse(BaseModel):
     certifications: list[ResourceOut]
     roadmap: list[RoadmapStep]
     curriculum: list[CurriculumItem] = Field(default_factory=list)
-    # Full expandable lists (UI shows 5, then +10 more).
     roadmap_more: list[RoadmapStep] = Field(default_factory=list)
     curriculum_more: list[CurriculumItem] = Field(default_factory=list)
     estimated_study_hours: float

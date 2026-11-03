@@ -83,7 +83,6 @@ def insights(
     body: InsightsRequest,
     db: Session = Depends(get_session),
 ) -> InsightsResponse:
-    """Role requirements + live online learning materials for role + skills."""
     reqs = requirements_for_role(body.query)
     top = [(skill, 1, pct) for skill, pct in reqs]
     stack = [s for s in (canonicalize_cv_skill(x) for x in body.cv_skills) if s]
@@ -102,7 +101,6 @@ def insights(
     )
     curriculum_all = build_curriculum(body.query, bundle, roadmap_all)
 
-    # UI shows 5 immediately; "explore more" reveals the next 10.
     roadmap, roadmap_more = roadmap_all[:5], roadmap_all[5:15]
     curriculum, curriculum_more = curriculum_all[:5], curriculum_all[5:15]
 
@@ -198,7 +196,6 @@ async def parse_cv(
     if not content:
         raise HTTPException(status_code=400, detail="Empty file")
 
-    # Extract text via a temp file (PDF reader needs a path).
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=True) as tmp:
         tmp.write(content)
         tmp.flush()
@@ -218,7 +215,6 @@ async def parse_cv(
 
     session_id = ensure_session_id(request, response)
 
-    # Replace previous CV for this session with the new upload.
     for old in db.exec(select(CvUpload).where(CvUpload.session_id == session_id)).all():
         db.delete(old)
 
@@ -292,7 +288,6 @@ def delete_cv(
 
 @router.post("/cv/skills/for-role")
 def skills_for_role(body: SkillsForRoleRequest) -> dict:
-    """Re-filter a known skill list for a different role (e.g. after role change)."""
     role_title = body.role.strip()
     reqs = requirements_for_role(role_title)
     skills = relevant_skills_for_role(reqs, body.skills, role_title=role_title)

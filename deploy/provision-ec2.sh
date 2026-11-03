@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# Provision a free-tier EC2 host and print the values needed for GitHub Actions.
-# Requires: docker (for aws-cli image), ~/.ssh/jobify-ec2[.pub]
-#
-# Usage:
-#   export AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... AWS_DEFAULT_REGION=us-east-1
-#   ./deploy/provision-ec2.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -44,7 +38,6 @@ aws sts get-caller-identity
 
 echo "==> Import key pair (idempotent)"
 if ! aws ec2 describe-key-pairs --key-names "$KEY_NAME" >/dev/null 2>&1; then
-  # AWS expects the raw key bytes (fileb) or base64 of the pubkey line.
   aws ec2 import-key-pair \
     --key-name "$KEY_NAME" \
     --public-key-material "fileb:///work/pathquire-ec2.pub"
@@ -71,7 +64,6 @@ AMI="$(aws ec2 describe-images \
   --owners 099720109477 \
   --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*" "Name=state,Values=available" \
   --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text)"
-# Fallback older name pattern if gp3 path empty
 if [[ -z "$AMI" || "$AMI" == "None" ]]; then
   AMI="$(aws ec2 describe-images \
     --owners 099720109477 \

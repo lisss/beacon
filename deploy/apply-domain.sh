@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Point the live EC2 stack at a free DuckDNS hostname.
-# Usage:
-#   DUCKDNS_SUBDOMAIN=pathquire DUCKDNS_TOKEN=... ./deploy/apply-domain.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -63,11 +60,9 @@ echo "==> Restart with duckdns profile"
     done
     docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env pull
   fi &&
-  # Drop old containers that may still hold :80/:443
   docker rm -f cast-caddy cast-api cast-duckdns casty-caddy casty-api casty-duckdns jobify-caddy jobify-api jobify-duckdns 2>/dev/null || true
   docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env up -d --force-recreate --remove-orphans"
 
-# persist locally
 sed -i.bak "s|^DOMAIN=.*|DOMAIN=${DOMAIN}|" "$ENV_FILE" || true
 grep -q '^DOMAIN=' "$ENV_FILE" || echo "DOMAIN=${DOMAIN}" >> "$ENV_FILE"
 rm -f "${ENV_FILE}.bak"

@@ -52,9 +52,7 @@ export function TodoPage() {
     setItems(listTodoLocal())
     try {
       await removeResourceFeedback(url)
-    } catch {
-      // Local remove already applied.
-    }
+    } catch {}
   }
 
   function onToggleDone(url: string, done: boolean) {

@@ -17,15 +17,9 @@ function read(): CollapseMap {
 function write(map: CollapseMap) {
   try {
     localStorage.setItem(KEY, JSON.stringify(map))
-  } catch {
-    // ignore quota / private mode
-  }
+  } catch {}
 }
 
-/**
- * Open state for a section.
- * If the user has never toggled it, use `defaultOpen` (false unless provided).
- */
 export function isSectionOpen(id: string, defaultOpen = false): boolean {
   const map = read()
   if (Object.prototype.hasOwnProperty.call(map, id)) {

@@ -87,8 +87,6 @@ button:disabled,
   animation: fade-in 0.35s ease-out both;
 }
 
-/* ——— Logo (Pathquire mark (gap bridge)) ——— */
-
 .logo-heading {
   margin: 0;
   font-size: inherit;
@@ -113,20 +111,18 @@ button.logo:hover {
 }
 
 .logo-mark {
-  width: 2.673rem; /* prior × 0.9 */
+  width: 2.673rem;
   height: 2.673rem;
   flex-shrink: 0;
 }
 
 .logo-wordmark {
-  font-size: 2.025rem; /* prior × 0.9 */
+  font-size: 2.025rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
   color: var(--logo);
 }
-
-/* ——— Section icons ——— */
 
 .section-title {
   display: flex;
@@ -145,8 +141,6 @@ button.logo:hover {
   color: var(--title-soft);
   opacity: 0.9;
 }
-
-/* ——— Shared panel chrome (sections, cards, banners) ——— */
 
 .panel {
   border: 1px solid var(--line);
@@ -174,7 +168,6 @@ button.logo:hover {
   padding: var(--panel-pad-y) var(--panel-pad-x);
 }
 
-/* Very light tinted backgrounds per section */
 .collapse-section[data-section='requirements'] {
   background: #eef6f3;
   border-color: rgba(47, 111, 102, 0.16);
@@ -279,7 +272,6 @@ button.logo:hover {
   color: var(--logo);
 }
 
-/* Info card above insights — same chrome as sections */
 .insights-banner {
   border: 1px solid rgba(47, 111, 102, 0.16);
   border-radius: var(--radius-section);
@@ -293,8 +285,6 @@ button.logo:hover {
     padding: var(--panel-pad-y-sm) var(--panel-pad-x-sm);
   }
 }
-
-/* ——— Buttons ——— */
 
 .btn {
   display: inline-flex;
@@ -359,7 +349,6 @@ button.logo:hover {
   color: var(--missing);
 }
 
-/* Learning list / back — plain clickable link, no background or border */
 .todo-link {
   display: inline-flex;
   align-items: center;
@@ -369,7 +358,7 @@ button.logo:hover {
   border: none;
   background: none;
   box-shadow: none;
-  font-size: 1.125rem; /* 0.9375rem × 1.2 */
+  font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.2;
   color: var(--ink);
@@ -483,8 +472,6 @@ button.logo:hover {
   color: var(--missing);
 }
 
-/* ——— Badges & feedback ——— */
-
 .rating-badge {
   display: inline-block;
   border-radius: 0.375rem;
@@ -519,8 +506,6 @@ button.logo:hover {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-
-/* ——— Skill bars ——— */
 
 .skill-bar-track {
   height: 0.375rem;

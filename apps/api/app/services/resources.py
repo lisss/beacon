@@ -26,7 +26,6 @@ def learning_topics(
     gap_skills: list[str],
     stack_skills: list[str],
 ) -> list[str]:
-    """Order: your stack first (personalize), then role gaps you still need."""
     topics: list[str] = []
     for skill in stack_skills:
         topics.append(skill)
@@ -109,7 +108,6 @@ def build_roadmap(
     stack_lower = {s.lower() for s in stack}
     gap_lower = {s.lower() for s in gap_names}
 
-    # Per-skill steps: gaps first, then other role requirements you don't have yet.
     focus_skills: list[str] = []
     for skill in gap_names:
         focus_skills.append(skill)
@@ -119,7 +117,6 @@ def build_roadmap(
             continue
         focus_skills.append(skill)
 
-    # No CV → walk the role requirements as Focus steps.
     if not stack and not focus_skills:
         focus_skills = role_skills[:10]
 
@@ -156,7 +153,6 @@ def build_roadmap(
         )
         order += 1
 
-    # Gap / uncovered / deepen skills as separate steps (UI shows 5, then +10 more).
     for skill in focus_skills:
         if order > 14:
             break
@@ -208,10 +204,6 @@ def build_curriculum(
     bundle: dict[str, list[ResourceOut]],
     roadmap: list[RoadmapStep],
 ) -> list[CurriculumItem]:
-    """
-    Brief study curriculum: phases ordered by resource value, with time and structure.
-    """
-    # Prefer top-valued books then courses as the spine of the plan.
     spine = rank_resources(
         _dedupe_resources([*(bundle.get("books") or []), *(bundle.get("courses") or [])])
     )[:12]
@@ -222,7 +214,6 @@ def build_curriculum(
     order = 1
     cumulative = 0.0
 
-    # Phase 0: orientation from roadmap skills
     if roadmap:
         first = roadmap[0]
         hours = min(first.estimated_hours, 10)
@@ -242,7 +233,6 @@ def build_curriculum(
         )
         order += 1
 
-    # Alternate books (deep) and courses (practice) by value order.
     week = 2
     for res in spine:
         hours = float(res.estimated_hours or (28 if res.kind == "book" else 12))

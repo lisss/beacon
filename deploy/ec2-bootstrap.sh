@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# First-boot / one-shot setup for Ubuntu 24.04 on a free-tier EC2 instance.
-# Run as root (via user-data) or with sudo after SSH:
-#   curl -fsSL https://raw.githubusercontent.com/lisss/pathquire/main/deploy/ec2-bootstrap.sh | sudo bash
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/lisss/pathquire.git}"
@@ -12,7 +9,6 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get install -y ca-certificates curl git
 
-# Docker Engine + Compose plugin
 if ! command -v docker >/dev/null 2>&1; then
   install -m 0755 -d /etc/apt/keyrings
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc

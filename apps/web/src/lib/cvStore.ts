@@ -36,9 +36,7 @@ export function saveCvMeta(cv: StoredCvMeta | null): void {
   try {
     if (!cv) localStorage.removeItem(CV_META_KEY)
     else localStorage.setItem(CV_META_KEY, JSON.stringify(cv))
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 export async function saveCvFile(file: File): Promise<void> {
@@ -96,7 +94,5 @@ export async function clearCvFile(): Promise<void> {
       tx.onerror = () => reject(tx.error ?? new Error('Failed to clear CV file'))
     })
     db.close()
-  } catch {
-    // ignore
-  }
+  } catch {}
 }

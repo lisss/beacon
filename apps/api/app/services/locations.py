@@ -4,7 +4,6 @@ from functools import lru_cache
 
 import geonamescache
 
-# Shown first when they match the query
 REMOTE_LOCATIONS = [
     "Remote",
     "Remote worldwide",
@@ -19,10 +18,8 @@ REMOTE_LOCATIONS = [
     "Anywhere",
 ]
 
-# Minimum population to count as a "main" city
 MIN_CITY_POPULATION = 100_000
 
-# Exclude from location typeahead
 EXCLUDED_COUNTRY_CODES = {"RU", "BY"}
 EXCLUDED_COUNTRY_NAMES = {"russia", "belarus"}
 
@@ -40,7 +37,6 @@ def _is_excluded_label(label: str) -> bool:
 
 @lru_cache(maxsize=1)
 def _location_catalog() -> list[tuple[str, int]]:
-    """Return (label, rank_weight) pairs. Higher weight = more important."""
     gc = geonamescache.GeonamesCache()
     countries = {
         code: meta
@@ -52,11 +48,9 @@ def _location_catalog() -> list[tuple[str, int]]:
 
     entries: dict[str, int] = {}
 
-    # Remote / flexible work options — highest priority weight
     for i, label in enumerate(REMOTE_LOCATIONS):
         entries[label] = 10_000_000 - i
 
-    # Countries (useful as broad location filters)
     for meta in countries.values():
         name = (meta.get("name") or "").strip()
         if name and not _is_excluded_label(name):
@@ -75,7 +69,6 @@ def _location_catalog() -> list[tuple[str, int]]:
         entries[label] = max(entries.get(label, 0), 500_000)
         entries[capital] = max(entries.get(capital, 0), 400_000)
 
-    # Main cities by population
     for city in gc.get_cities().values():
         ccode = city.get("countrycode") or ""
         if ccode in EXCLUDED_COUNTRY_CODES:
@@ -98,13 +91,11 @@ def _location_catalog() -> list[tuple[str, int]]:
 
 
 def suggest_city_locations(q: str = "", limit: int = 40) -> list[str]:
-    """Typeahead over remote options + major world cities/countries."""
     needle = q.strip().lower()
     catalog = _location_catalog()
     limit = max(1, min(limit, 80))
 
     if not needle:
-        # Lead with remote options, then fill the rest with largest cities
         remotes = [label for label, _ in catalog if label in set(REMOTE_LOCATIONS)]
         cities = [label for label, _ in catalog if "," in label]
         return (remotes + cities)[:limit]

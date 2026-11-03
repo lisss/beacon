@@ -192,10 +192,8 @@ def seniority_rank(title: str) -> int:
 def suggest_locations(session: Session, q: str = "", limit: int = 40) -> list[str]:
     from app.services.locations import _is_excluded_label, suggest_city_locations
 
-    # Library catalog (Remote + main cities/countries)
     results = suggest_city_locations(q=q, limit=limit)
 
-    # Merge any locations already seen in scraped jobs
     needle = q.strip().lower()
     job_locs = [loc for loc in session.exec(select(Job.location)).all() if loc]
     extras: list[str] = []
@@ -247,7 +245,6 @@ ROLE_STOPWORDS = {
 
 
 def significant_role_tokens(query: str) -> list[str]:
-    """Tech/domain tokens from a role title (drops generic words like Engineer)."""
     return [
         t
         for t in re.split(r"[\s,/|+]+", query.strip())
@@ -256,7 +253,6 @@ def significant_role_tokens(query: str) -> list[str]:
 
 
 def title_relevance(query: str, title: str) -> int:
-    """Higher = better title match for the selected role."""
     title_l = (title or "").lower()
     query_l = query.strip().lower()
     if not query_l:
@@ -298,7 +294,6 @@ def search_jobs(
     statement = select(Job)
     filters = []
     sig = significant_role_tokens(query)
-    # Prefer matching distinctive role tokens; fall back to full token AND
     match_tokens = sig or [t for t in query.split() if t.strip()]
     for token in match_tokens:
         like = f"%{token}%"
@@ -315,7 +310,6 @@ def search_jobs(
     statement = statement.order_by(col(Job.created_at).desc()).limit(max(limit * 4, 100))
     jobs = list(session.exec(statement).all())
 
-    # Strong title matches first (all significant tokens in title)
     strong = [
         j
         for j in jobs
@@ -341,7 +335,6 @@ def search_jobs(
 
 
 def currency_for_location(location: str) -> str:
-    """Pick a display currency from the user's location filter."""
     loc = (location or "").lower()
     if not loc:
         return "USD"
@@ -483,7 +476,6 @@ def salary_distribution(
 
 
 def _parse_salary_text(text: str) -> tuple[Optional[float], Optional[float], str]:
-    """Parse free-text salary and detect currency when possible."""
     raw = text or ""
     upper = raw.upper()
     currency = "USD"

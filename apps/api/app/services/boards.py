@@ -26,7 +26,6 @@ def _tokens(query: str) -> list[str]:
 
 
 def title_matches_query(query: str, title: str) -> bool:
-    """Strict relevance: every query token must appear in the job title."""
     tokens = _tokens(query)
     if not tokens:
         return True
@@ -80,7 +79,6 @@ async def _get_json(client: httpx.AsyncClient, url: str, **kwargs: Any) -> Any:
 
 
 def _save_payloads(session: Session, payloads: list[dict], query: str) -> list[dict]:
-    """Persist payloads sequentially and return title-relevant listings."""
     listings: list[dict] = []
     seen: set[str] = set()
     for payload in payloads:
@@ -318,7 +316,6 @@ async def _collect_adzuna(client: httpx.AsyncClient, query: str, location: str, 
         "AUD": "au",
         "USD": "us",
     }.get(currency, "us")
-    # Prefer Ireland/NL endpoints when location hints at them
     loc = (location or "").lower()
     if "ireland" in loc or "dublin" in loc:
         country = "ie"
@@ -387,7 +384,6 @@ async def fetch_all_marketplaces(
     location: str = "",
     per_source: int = 30,
 ) -> list[dict]:
-    """Pull every supported board in parallel, then save + rank title-relevant hits."""
     q = query.strip()
     headers = {"User-Agent": USER_AGENT}
 

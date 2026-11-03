@@ -57,7 +57,6 @@ export function HomePage() {
   const urlRole = (searchParams.get('q') || searchParams.get('role') || '').trim()
   const [query, setQuery] = useState(urlRole || saved.query || '')
   const [cvText, setCvText] = useState(saved.cvText ?? '')
-  /** Full skill list from the last CV upload — re-filtered whenever role changes. */
   const [cvAllSkills, setCvAllSkills] = useState<string[]>(saved.cvAllSkills ?? [])
   const [storedCv, setStoredCv] = useState<StoredCv | null>(() => loadCvMeta())
   const [cvParsing, setCvParsing] = useState(false)
@@ -104,7 +103,6 @@ export function HomePage() {
     )
   }
 
-  // Persist UI state across refresh.
   useEffect(() => {
     setHydrated(true)
   }, [])
@@ -131,16 +129,13 @@ export function HomePage() {
     }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-    } catch {
-      // Quota / private mode — ignore.
-    }
+    } catch {}
   }, [query, cvText, cvAllSkills, hasCvInput, insights, hydrated])
 
   useEffect(() => {
     saveCvMeta(storedCv)
   }, [storedCv])
 
-  // Restore CV across refresh: local meta/file first, then re-bind server session.
   useEffect(() => {
     let cancelled = false
     void (async () => {
@@ -163,11 +158,9 @@ export function HomePage() {
           }
           return
         }
-      } catch {
-        // Fall through to local re-upload.
-      }
+      } catch {}
 
-      // Server session lost — re-upload local file so download / session stay valid.
+      // Session cookie is gone — re-upload the local file so download still works.
       const file = await loadCvFile()
       if (cancelled || !file) return
       try {
@@ -181,9 +174,7 @@ export function HomePage() {
         if (all_skills.length > 0) {
           setCvAllSkills((prev) => (prev.length > 0 ? prev : all_skills))
         }
-      } catch {
-        // Keep local meta so the UI still shows the uploaded CV.
-      }
+      } catch {}
     })()
     return () => {
       cancelled = true
@@ -192,7 +183,6 @@ export function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // When role changes and we have a CV skill bank, refresh the skills field.
   useEffect(() => {
     const role = query.trim()
     if (!role || cvAllSkills.length === 0) return
@@ -312,9 +302,7 @@ export function HomePage() {
   async function onRemoveCv() {
     try {
       await deleteCurrentCv()
-    } catch {
-      // Still clear local state.
-    }
+    } catch {}
     await clearCvFile()
     if (localCvUrlRef.current) {
       URL.revokeObjectURL(localCvUrlRef.current)
@@ -328,13 +316,10 @@ export function HomePage() {
   }
 
   async function onDownloadCv(e: MouseEvent<HTMLAnchorElement>) {
-    // Prefer server download; if session is gone, fall back to local IndexedDB file.
     try {
       const remote = await fetchCurrentCv()
       if (remote) return
-    } catch {
-      // use local
-    }
+    } catch {}
     e.preventDefault()
     const file = await loadCvFile()
     if (!file) return

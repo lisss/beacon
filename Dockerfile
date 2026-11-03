@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
 
-# --- Frontend build ---
 FROM node:22-alpine AS web
 WORKDIR /web
 COPY apps/web/package.json apps/web/package-lock.json ./
@@ -10,7 +9,6 @@ COPY apps/web/ ./
 ENV VITE_API_URL=
 RUN npm run build
 
-# --- API runtime ---
 FROM python:3.13-slim AS api
 WORKDIR /app
 

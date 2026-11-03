@@ -5,7 +5,7 @@ import uuid
 from fastapi import Request, Response
 
 SESSION_COOKIE = "pathquire_sid"
-SESSION_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
+SESSION_MAX_AGE = 60 * 60 * 24 * 30
 
 
 def get_session_id(request: Request) -> str | None:
@@ -13,7 +13,6 @@ def get_session_id(request: Request) -> str | None:
 
 
 def ensure_session_id(request: Request, response: Response) -> str:
-    """Return existing session id or create one and set the cookie."""
     sid = get_session_id(request)
     if sid:
         return sid
