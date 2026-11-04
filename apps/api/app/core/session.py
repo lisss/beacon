@@ -4,7 +4,7 @@ import uuid
 
 from fastapi import Request, Response
 
-SESSION_COOKIE = "shine_sid"
+SESSION_COOKIE = "ogma_sid"
 SESSION_MAX_AGE = 60 * 60 * 24 * 30
 
 

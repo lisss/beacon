@@ -1,18 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: shine-db
+    container_name: ogma-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: shine
-      POSTGRES_PASSWORD: shine
-      POSTGRES_DB: shine
+      POSTGRES_USER: ogma
+      POSTGRES_PASSWORD: ogma
+      POSTGRES_DB: ogma
     ports:
       - "5432:5432"
     volumes:
-      - shine_pgdata:/var/lib/postgresql/data
+      - ogma_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U shine -d shine"]
+      test: ["CMD-SHELL", "pg_isready -U ogma -d ogma"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: shine-api
+    container_name: ogma-api
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       PORT: "8000"
-      DATABASE_URL: postgresql+psycopg://shine:shine@db:5432/shine
+      DATABASE_URL: postgresql+psycopg://ogma:ogma@db:5432/ogma
       API_CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000
       REMOTIVE_ENABLED: "true"
       YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
@@ -50,4 +50,4 @@ services:
       start_period: 20s
 
 volumes:
-  shine_pgdata:
+  ogma_pgdata:

@@ -15,7 +15,7 @@ apps/web-next-backup
 
 # Local DBs & uploads
 *.db
-**/shine.db
+**/ogma.db
 apps/api/uploads
 uploads
 

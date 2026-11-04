@@ -1,7 +1,7 @@
 import type { StoredCv } from '@/lib/api'
 
-const CV_META_KEY = 'shine.cv.meta.v1'
-const CV_DB = 'shine-cv'
+const CV_META_KEY = 'ogma.cv.meta.v1'
+const CV_DB = 'ogma-cv'
 const CV_STORE = 'files'
 const CV_FILE_KEY = 'current'
 

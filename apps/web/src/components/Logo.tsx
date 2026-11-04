@@ -7,7 +7,7 @@ type LogoProps = {
   asHeading?: boolean
 }
 
-export function ShineMark({ className = '' }: { className?: string }) {
+export function OgmaMark({ className = '' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -33,13 +33,13 @@ export function ShineMark({ className = '' }: { className?: string }) {
 
 export function Logo({
   className = '',
-  title = 'Shine',
+  title = 'Ogma',
   onClick,
   asHeading = false,
 }: LogoProps) {
   const inner = (
     <>
-      <ShineMark className="logo-mark" />
+      <OgmaMark className="logo-mark" />
       <span className="logo-wordmark">{title}</span>
     </>
   )

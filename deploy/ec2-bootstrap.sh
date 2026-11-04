@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="${REPO_URL:-https://github.com/lisss/shine.git}"
-APP_DIR="${APP_DIR:-/opt/shine}"
+REPO_URL="${REPO_URL:-https://github.com/lisss/ogma.git}"
+APP_DIR="${APP_DIR:-/opt/ogma}"
 APP_USER="${APP_USER:-ubuntu}"
 
 export DEBIAN_FRONTEND=noninteractive

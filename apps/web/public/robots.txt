@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /learning-list
 
-Sitemap: https://shine.duckdns.org/sitemap.xml
+Sitemap: https://ogma.duckdns.org/sitemap.xml

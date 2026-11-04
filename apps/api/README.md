@@ -1,5 +1,5 @@
 """
-shine API — FastAPI backend.
+ogma API — FastAPI backend.
 
 Local:
   source .venv/bin/activate
