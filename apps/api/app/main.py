@@ -97,20 +97,22 @@ def role_seo_page(slug: str) -> str:
     return build_role_page_html(settings.site_url, title)
 
 
-@app.get("/google{code}.html")
+@app.api_route("/google{code}.html", methods=["GET", "HEAD"])
 def google_site_verification_file(code: str) -> Response:
     """
     Google Search Console HTML-file verification.
-    Must return the exact body Google expects — not the SPA shell.
+    Body must match the downloaded file exactly: one line, no trailing newline.
+    HEAD must succeed too; a GET-only route returns 405 and Search Console
+    treats the file as missing.
     """
     import re
 
     if not re.fullmatch(r"[A-Za-z0-9_-]{6,128}", code):
         raise HTTPException(status_code=404, detail="Not found")
-    body = f"google-site-verification: google{code}.html\n"
+    body = f"google-site-verification: google{code}.html".encode("ascii")
     return Response(
         content=body,
-        media_type="text/html; charset=utf-8",
+        media_type="text/html",
         headers={"Cache-Control": "no-store"},
     )
 
