@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="${1:-https://github.com/lisss/ogma.git}"
-APP_DIR="${HOME}/ogma"
+REPO_URL="${1:-https://github.com/lisss/medeina.git}"
+APP_DIR="${HOME}/medeina"
 PORT="${PORT:-8000}"
 
 if command -v apt-get >/dev/null 2>&1; then
@@ -49,13 +49,13 @@ if ! docker info >/dev/null 2>&1; then
   DOCKER=(sudo docker)
 fi
 
-"${DOCKER[@]}" build -t ogma:latest .
-"${DOCKER[@]}" rm -f ogma 2>/dev/null || true
-"${DOCKER[@]}" run -d --name ogma --restart unless-stopped \
+"${DOCKER[@]}" build -t medeina:latest .
+"${DOCKER[@]}" rm -f medeina 2>/dev/null || true
+"${DOCKER[@]}" run -d --name medeina --restart unless-stopped \
   -p "${PORT}:8000" \
   -e API_CORS_ORIGINS='*' \
-  -e DATABASE_URL='sqlite:////tmp/ogma.db' \
-  ogma:latest
+  -e DATABASE_URL='sqlite:////tmp/medeina.db' \
+  medeina:latest
 
 echo
 echo "App should be at: http://$(curl -s --max-time 3 ifconfig.me 2>/dev/null || echo YOUR_PUBLIC_IP):${PORT}/"

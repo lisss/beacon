@@ -1,18 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: ogma-db
+    container_name: medeina-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ogma
-      POSTGRES_PASSWORD: ogma
-      POSTGRES_DB: ogma
+      POSTGRES_USER: medeina
+      POSTGRES_PASSWORD: medeina
+      POSTGRES_DB: medeina
     ports:
       - "5432:5432"
     volumes:
-      - ogma_pgdata:/var/lib/postgresql/data
+      - medeina_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ogma -d ogma"]
+      test: ["CMD-SHELL", "pg_isready -U medeina -d medeina"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ogma-api
+    container_name: medeina-api
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       PORT: "8000"
-      DATABASE_URL: postgresql+psycopg://ogma:ogma@db:5432/ogma
+      DATABASE_URL: postgresql+psycopg://medeina:medeina@db:5432/medeina
       API_CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000
       REMOTIVE_ENABLED: "true"
       YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
@@ -50,4 +50,4 @@ services:
       start_period: 20s
 
 volumes:
-  ogma_pgdata:
+  medeina_pgdata:

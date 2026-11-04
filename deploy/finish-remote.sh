@@ -26,9 +26,9 @@ for i in $(seq 1 36); do
   fi
 done
 
-echo "==> Wait for docker + /opt/ogma"
+echo "==> Wait for docker + /opt/medeina"
 for i in $(seq 1 36); do
-  if "${SSH[@]}" 'command -v docker >/dev/null && test -d /opt/ogma/.git'; then
+  if "${SSH[@]}" 'command -v docker >/dev/null && test -d /opt/medeina/.git'; then
     break
   fi
   sleep 5
@@ -39,15 +39,15 @@ for i in $(seq 1 36); do
 done
 
 echo "==> Write remote .env"
-"${SSH[@]}" "cat > /opt/ogma/.env" <<EOF
+"${SSH[@]}" "cat > /opt/medeina/.env" <<EOF
 DOMAIN=${DOMAIN}
 IMAGE=${IMAGE}
 REMOTIVE_ENABLED=true
 EOF
-"${SSH[@]}" 'chmod 600 /opt/ogma/.env'
+"${SSH[@]}" 'chmod 600 /opt/medeina/.env'
 
 echo "==> Pull & start"
-"${SSH[@]}" 'cd /opt/ogma && git fetch --depth 1 origin main && git reset --hard origin/main && docker compose -f docker-compose.prod.yml --env-file .env pull && docker compose -f docker-compose.prod.yml --env-file .env up -d'
+"${SSH[@]}" 'cd /opt/medeina && git fetch --depth 1 origin main && git reset --hard origin/main && docker compose -f docker-compose.prod.yml --env-file .env pull && docker compose -f docker-compose.prod.yml --env-file .env up -d'
 
 echo "==> Health"
 for i in $(seq 1 30); do
@@ -58,16 +58,16 @@ for i in $(seq 1 30); do
   sleep 5
   if [[ "$i" -eq 30 ]]; then
     echo "HTTPS not healthy yet — try: curl -v https://${DOMAIN}/api/health"
-    "${SSH[@]}" 'cd /opt/ogma && docker compose -f docker-compose.prod.yml --env-file .env ps'
+    "${SSH[@]}" 'cd /opt/medeina && docker compose -f docker-compose.prod.yml --env-file .env ps'
   fi
 done
 
 if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
   echo "==> GitHub Actions secrets"
-  gh secret set EC2_HOST --repo lisss/ogma --body "$EC2_HOST"
-  gh secret set EC2_USER --repo lisss/ogma --body "$EC2_USER"
-  gh secret set EC2_SSH_KEY --repo lisss/ogma < "$KEY_PATH"
-  gh variable set DEPLOY_ENABLED --repo lisss/ogma --body true
+  gh secret set EC2_HOST --repo lisss/medeina --body "$EC2_HOST"
+  gh secret set EC2_USER --repo lisss/medeina --body "$EC2_USER"
+  gh secret set EC2_SSH_KEY --repo lisss/medeina < "$KEY_PATH"
+  gh variable set DEPLOY_ENABLED --repo lisss/medeina --body true
   echo "Deploy on push to main is enabled."
 else
   echo "gh not authenticated — set secrets manually (see deploy/README.md)"

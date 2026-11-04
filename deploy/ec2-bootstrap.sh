@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="${REPO_URL:-https://github.com/lisss/ogma.git}"
-APP_DIR="${APP_DIR:-/opt/ogma}"
+REPO_URL="${REPO_URL:-https://github.com/lisss/medeina.git}"
+APP_DIR="${APP_DIR:-/opt/medeina}"
 APP_USER="${APP_USER:-ubuntu}"
 
 export DEBIAN_FRONTEND=noninteractive

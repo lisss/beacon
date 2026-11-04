@@ -1,7 +1,7 @@
 services:
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
-    container_name: ogma-duckdns
+    container_name: medeina-duckdns
     restart: unless-stopped
     profiles: ["duckdns"]
     environment:
@@ -16,7 +16,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
-    container_name: ogma-caddy
+    container_name: medeina-caddy
     restart: unless-stopped
     ports:
       - "80:80"
@@ -36,15 +36,15 @@ services:
         max-file: "2"
 
   api:
-    image: ${IMAGE:-ghcr.io/lisss/ogma:latest}
-    container_name: ogma-api
+    image: ${IMAGE:-ghcr.io/lisss/medeina:latest}
+    container_name: medeina-api
     restart: unless-stopped
     expose:
       - "8000"
     environment:
       PORT: "8000"
       # SQLite keeps a t3.micro under ~1GB RAM; swap to Postgres later if you upgrade.
-      DATABASE_URL: sqlite:////data/ogma.db
+      DATABASE_URL: sqlite:////data/medeina.db
       API_CORS_ORIGINS: https://${DOMAIN},http://${DOMAIN},https://pathjobify.duckdns.org,http://pathjobify.duckdns.org,https://pathjobby.duckdns.org,http://pathjobby.duckdns.org,https://getcast.duckdns.org,http://getcast.duckdns.org
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://${DOMAIN}}
       GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}

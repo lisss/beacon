@@ -1,4 +1,4 @@
-# Deploy Ogma (free AWS + free domain + GitHub Actions)
+# Deploy Medeina (free AWS + free domain + GitHub Actions)
 
 **Stack:** GitHub Actions builds a Docker image → pushes to GHCR → EC2 pulls it.  
 **Domain:** free `<elastic-ip>.sslip.io` (no signup) or optional DuckDNS + Caddy HTTPS.  
@@ -14,14 +14,14 @@ export AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... AWS_DEFAULT_REGION=us-eas
 
 > AWS free tier changed in mid-2025. New accounts get credits (~$100–$200 for up to 6 months). Older accounts may still have the classic 12‑month `t2.micro`/`t3.micro` offer. Watch Billing → Free Tier.
 
-There is no lasting free custom `.com`. DuckDNS gives you a free hostname like `ogma.duckdns.org`.
+There is no lasting free custom `.com`. DuckDNS gives you a free hostname like `pathquire.duckdns.org`.
 
 ---
 
 ## 1. Free domain (DuckDNS)
 
 1. Sign in at [https://www.duckdns.org](https://www.duckdns.org)
-2. Create a subdomain, e.g. `ogma` → `ogma.duckdns.org`
+2. Create a subdomain, e.g. `medeina` → `pathquire.duckdns.org`
 3. Copy your **token** (used in the server `.env`)
 
 Leave the IP blank for now; the DuckDNS container on EC2 will set it.
@@ -31,7 +31,7 @@ Leave the IP blank for now; the DuckDNS container on EC2 will set it.
 ## 2. AWS EC2 (free tier)
 
 1. Create / sign in to AWS → **EC2 → Launch instance**
-2. Name: `ogma`
+2. Name: `medeina`
 3. AMI: **Ubuntu Server 24.04 LTS**
 4. Type: **t3.micro** (or **t2.micro** if that’s what Free Tier shows)
 5. Key pair: create/download a `.pem` (you’ll use this for SSH + GitHub secret)
@@ -48,36 +48,36 @@ Leave the IP blank for now; the DuckDNS container on EC2 will set it.
 SSH in:
 
 ```bash
-ssh -i ~/Downloads/ogma.pem ubuntu@YOUR_EC2_PUBLIC_IP
-curl -fsSL https://raw.githubusercontent.com/lisss/ogma/main/deploy/ec2-bootstrap.sh | sudo bash
+ssh -i ~/Downloads/medeina.pem ubuntu@YOUR_EC2_PUBLIC_IP
+curl -fsSL https://raw.githubusercontent.com/lisss/medeina/main/deploy/ec2-bootstrap.sh | sudo bash
 ```
 
 Edit env:
 
 ```bash
-nano /opt/ogma/.env
+nano /opt/medeina/.env
 ```
 
 Set at least:
 
 ```env
-DOMAIN=ogma.duckdns.org
-DUCKDNS_SUBDOMAIN=ogma
+DOMAIN=pathquire.duckdns.org
+DUCKDNS_SUBDOMAIN=pathquire
 DUCKDNS_TOKEN=your-duckdns-token
-IMAGE=ghcr.io/lisss/ogma:latest
+IMAGE=ghcr.io/lisss/medeina:latest
 ```
 
-Make the GHCR package **public** (GitHub → Packages → `ogma` → Package settings → Change visibility), **or** create a PAT with `read:packages` and put it in GitHub secrets as `GHCR_TOKEN` (+ `GHCR_USER`).
+Make the GHCR package **public** (GitHub → Packages → `medeina` → Package settings → Change visibility), **or** create a PAT with `read:packages` and put it in GitHub secrets as `GHCR_TOKEN` (+ `GHCR_USER`).
 
 First start (after an image exists on GHCR — push `main` once first if needed):
 
 ```bash
-cd /opt/ogma
+cd /opt/medeina
 docker compose -f docker-compose.prod.yml --env-file .env pull
 docker compose -f docker-compose.prod.yml --env-file .env up -d
 ```
 
-Open `https://ogma.duckdns.org` (Caddy issues a Let’s Encrypt cert automatically).
+Open `https://pathquire.duckdns.org` (Caddy issues a Let’s Encrypt cert automatically).
 
 ---
 
@@ -93,12 +93,12 @@ Repo → **Settings → Secrets and variables → Actions**
 | Secret | `GHCR_TOKEN` | (optional) PAT with `read:packages` if the image is private |
 | Secret | `GHCR_USER` | (optional) GitHub username for that PAT |
 | Variable | `DEPLOY_ENABLED` | `true` (enables the deploy job) |
-| Variable | `APP_DIR` | optional, default `/opt/ogma` |
+| Variable | `APP_DIR` | optional, default `/opt/medeina` |
 
 On every push to `main`:
 
 1. Build `linux/amd64` image
-2. Push `ghcr.io/lisss/ogma:latest` (+ short SHA tag)
+2. Push `ghcr.io/lisss/medeina:latest` (+ short SHA tag)
 3. If `DEPLOY_ENABLED=true`, SSH to EC2, `git pull`, `docker compose pull && up -d`
 
 Until you set `DEPLOY_ENABLED=true`, pushes only publish the image (safe while you finish EC2 setup).
@@ -109,8 +109,8 @@ Until you set `DEPLOY_ENABLED=true`, pushes only publish the image (safe while y
 
 ```bash
 # on EC2
-docker compose -f /opt/ogma/docker-compose.prod.yml --env-file /opt/ogma/.env ps
-curl -fsS https://ogma.duckdns.org/api/health
+docker compose -f /opt/medeina/docker-compose.prod.yml --env-file /opt/medeina/.env ps
+curl -fsS https://pathquire.duckdns.org/api/health
 ```
 
 Local equivalent remains:

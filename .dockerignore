@@ -15,7 +15,7 @@ apps/web-next-backup
 
 # Local DBs & uploads
 *.db
-**/ogma.db
+**/medeina.db
 apps/api/uploads
 uploads
 

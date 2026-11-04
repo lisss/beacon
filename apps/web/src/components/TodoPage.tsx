@@ -34,8 +34,8 @@ export function TodoPage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Learning list | Ogma',
-      description: 'Your saved Ogma study materials — books, courses, and interview prep.',
+      title: 'Learning list | Medeina',
+      description: 'Your saved Medeina study materials — books, courses, and interview prep.',
       path: '/learning-list',
     })
   }, [])
@@ -43,8 +43,8 @@ export function TodoPage() {
   useEffect(() => {
     void reload()
     const sync = () => setItems(listTodoLocal())
-    window.addEventListener('ogma-todo-changed', sync)
-    return () => window.removeEventListener('ogma-todo-changed', sync)
+    window.addEventListener('medeina-todo-changed', sync)
+    return () => window.removeEventListener('medeina-todo-changed', sync)
   }, [])
 
   async function onRemove(url: string) {

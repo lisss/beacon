@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="$ROOT/deploy/.provisioned.env"
 KEY_PATH="${KEY_PATH:-$HOME/.ssh/jobify-ec2}"
 
-: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. ogma)}"
+: "${DUCKDNS_SUBDOMAIN:?set DUCKDNS_SUBDOMAIN (e.g. medeina)}"
 : "${DUCKDNS_TOKEN:?set DUCKDNS_TOKEN}"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -22,12 +22,12 @@ echo "==> Update DuckDNS → ${EC2_HOST}"
 curl -fsS "https://www.duckdns.org/update?domains=${DUCKDNS_SUBDOMAIN}&token=${DUCKDNS_TOKEN}&ip=${EC2_HOST}"
 echo
 
-APP_DIR="${APP_DIR:-/opt/ogma}"
-IMAGE_REF="${IMAGE:-ghcr.io/lisss/ogma:latest}"
+APP_DIR="${APP_DIR:-/opt/medeina}"
+IMAGE_REF="${IMAGE:-ghcr.io/lisss/medeina:latest}"
 
 echo "==> Ensure app dir ${APP_DIR} (migrate older dirs if needed)"
 "${SSH[@]}" "set -e
-for old in /opt/cast /opt/casty /opt/jobify; do
+for old in /opt/ogma /opt/pathquire /opt/shine /opt/cast /opt/casty /opt/jobify; do
   if [ -d \"\$old\" ] && [ ! -e '${APP_DIR}' ]; then
     sudo mv \"\$old\" '${APP_DIR}'
   fi
@@ -48,7 +48,7 @@ EOF
 
 echo "==> Restart with duckdns profile"
 "${SSH[@]}" "cd '${APP_DIR}' &&
-  (git remote set-url origin https://github.com/lisss/ogma.git 2>/dev/null || true) &&
+  (git remote set-url origin https://github.com/lisss/medeina.git 2>/dev/null || true) &&
   git fetch --depth 1 origin main &&
   git reset --hard origin/main &&
   if ! docker compose -f docker-compose.prod.yml --profile duckdns --env-file .env pull; then

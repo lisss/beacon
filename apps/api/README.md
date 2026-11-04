@@ -1,5 +1,5 @@
 """
-ogma API — FastAPI backend.
+medeina API — FastAPI backend.
 
 Local:
   source .venv/bin/activate

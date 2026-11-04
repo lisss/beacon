@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    database_url: str = "sqlite:///./ogma.db"
+    database_url: str = "sqlite:///./medeina.db"
     api_cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     adzuna_app_id: str = ""
     adzuna_app_key: str = ""
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     youtube_api_key: str = ""
     google_books_api_key: str = ""
     github_token: str = ""
-    public_site_url: str = "https://ogma.duckdns.org"
+    public_site_url: str = "https://pathquire.duckdns.org"
     google_site_verification: str = ""
 
     @property
