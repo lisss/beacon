@@ -16,6 +16,7 @@ from app.services.jobs import seed_sample_jobs
 from app.services.seo import (
     build_robots_txt,
     build_role_page_html,
+    build_roles_index_html,
     build_sitemap_xml,
     title_from_slug,
 )
@@ -79,6 +80,15 @@ def sitemap_xml() -> Response:
     )
 
 
+@app.get("/roles", response_class=HTMLResponse)
+def roles_index() -> Response:
+    return Response(
+        content=build_roles_index_html(settings.site_url),
+        media_type="text/html; charset=utf-8",
+        headers={"Cache-Control": "public, max-age=3600"},
+    )
+
+
 @app.get("/roles/{slug}", response_class=HTMLResponse)
 def role_seo_page(slug: str) -> str:
     title = title_from_slug(slug)
@@ -105,7 +115,7 @@ def google_site_verification_file(code: str) -> Response:
     )
 
 
-def _spa_html() -> Response:
+def _spa_html(noindex: bool = False) -> Response:
     # Always revalidate HTML so deploys pick up new hashed JS/CSS immediately.
     index = STATIC_DIR / "index.html"
     headers = {
@@ -113,13 +123,20 @@ def _spa_html() -> Response:
         "Pragma": "no-cache",
     }
     token = (settings.google_site_verification or "").strip()
-    if not token:
+    if not token and not noindex:
         return FileResponse(index, headers=headers)
 
     html = index.read_text(encoding="utf-8")
-    meta = f'<meta name="google-site-verification" content="{token}" />'
-    if 'name="google-site-verification"' not in html:
+    if token and 'name="google-site-verification"' not in html:
+        meta = f'<meta name="google-site-verification" content="{token}" />'
         html = html.replace("</head>", f"    {meta}\n  </head>", 1)
+    if noindex:
+        # The shell is the homepage. Private routes must say noindex before JS runs.
+        html = html.replace(
+            'content="index,follow,max-image-preview:large,max-snippet:-1"',
+            'content="noindex, nofollow"',
+            1,
+        )
     return Response(content=html, media_type="text/html; charset=utf-8", headers=headers)
 
 
@@ -141,7 +158,8 @@ if STATIC_DIR.is_dir():
             if "/assets/" in str(candidate) or candidate.parent == assets_dir:
                 headers["Cache-Control"] = "public, max-age=31536000, immutable"
             return FileResponse(candidate, headers=headers)
-        return _spa_html()
+        noindex = full_path.strip("/") == "learning-list"
+        return _spa_html(noindex=noindex)
 else:
 
     @app.get("/")

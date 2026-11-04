@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /learning-list
 
 Sitemap: https://medeina.duckdns.org/sitemap.xml

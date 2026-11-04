@@ -37,6 +37,7 @@ export function TodoPage() {
       title: 'Learning list | Medeina',
       description: 'Your saved Medeina study materials — books, courses, and interview prep.',
       path: '/learning-list',
+      robots: 'noindex, nofollow',
     })
   }, [])
 

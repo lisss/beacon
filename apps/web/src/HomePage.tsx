@@ -534,6 +534,14 @@ export function HomePage() {
               </a>
             </li>
           ))}
+          <li>
+            <a
+              href="/roles"
+              className="text-[var(--link)] underline decoration-[var(--link-underline)] underline-offset-2 hover:text-[var(--accent)]"
+            >
+              All role guides
+            </a>
+          </li>
         </ul>
         <p className="mt-4 max-w-2xl leading-relaxed">
           Medeina is a free career learning planner: compare job role requirements to your

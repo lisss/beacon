@@ -4,10 +4,12 @@ export function setDocumentMeta({
   title,
   description,
   path = '/',
+  robots = 'index,follow,max-image-preview:large,max-snippet:-1',
 }: {
   title: string
   description?: string
   path?: string
+  robots?: string
 }) {
   document.title = title
 
@@ -21,6 +23,14 @@ export function setDocumentMeta({
     document.head.appendChild(meta)
   }
   meta.setAttribute('content', desc)
+
+  let robotsMeta = document.querySelector('meta[name="robots"]')
+  if (!robotsMeta) {
+    robotsMeta = document.createElement('meta')
+    robotsMeta.setAttribute('name', 'robots')
+    document.head.appendChild(robotsMeta)
+  }
+  robotsMeta.setAttribute('content', robots)
 
   const canonicalHref = `${SITE}${path.startsWith('/') ? path : `/${path}`}`
   let link = document.querySelector('link[rel="canonical"]')
