@@ -1,4 +1,4 @@
-const SITE = 'https://pathquire.duckdns.org'
+const SITE = 'https://getmedeina.duckdns.org'
 
 export function setDocumentMeta({
   title,

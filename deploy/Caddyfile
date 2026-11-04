@@ -18,3 +18,7 @@ getcast.duckdns.org {
 getcasty.duckdns.org {
 	redir https://{$DOMAIN}{uri} permanent
 }
+
+pathquire.duckdns.org {
+	redir https://{$DOMAIN}{uri} permanent
+}
