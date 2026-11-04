@@ -14,14 +14,14 @@ export AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... AWS_DEFAULT_REGION=us-eas
 
 > AWS free tier changed in mid-2025. New accounts get credits (~$100–$200 for up to 6 months). Older accounts may still have the classic 12‑month `t2.micro`/`t3.micro` offer. Watch Billing → Free Tier.
 
-There is no lasting free custom `.com`. DuckDNS gives you a free hostname like `getmedeina.duckdns.org`.
+There is no lasting free custom `.com`. DuckDNS gives you a free hostname like `medeina.duckdns.org`.
 
 ---
 
 ## 1. Free domain (DuckDNS)
 
 1. Sign in at [https://www.duckdns.org](https://www.duckdns.org)
-2. Create a subdomain, e.g. `getmedeina` → `getmedeina.duckdns.org`
+2. Create a subdomain, e.g. `medeina` → `medeina.duckdns.org`
 3. Copy your **token** (used in the server `.env`)
 
 Leave the IP blank for now; the DuckDNS container on EC2 will set it.
@@ -61,8 +61,8 @@ nano /opt/medeina/.env
 Set at least:
 
 ```env
-DOMAIN=getmedeina.duckdns.org
-DUCKDNS_SUBDOMAIN=getmedeina
+DOMAIN=medeina.duckdns.org
+DUCKDNS_SUBDOMAIN=medeina
 DUCKDNS_TOKEN=your-duckdns-token
 IMAGE=ghcr.io/lisss/medeina:latest
 ```
@@ -77,7 +77,7 @@ docker compose -f docker-compose.prod.yml --env-file .env pull
 docker compose -f docker-compose.prod.yml --env-file .env up -d
 ```
 
-Open `https://getmedeina.duckdns.org` (Caddy issues a Let’s Encrypt cert automatically).
+Open `https://medeina.duckdns.org` (Caddy issues a Let’s Encrypt cert automatically).
 
 ---
 
@@ -110,7 +110,7 @@ Until you set `DEPLOY_ENABLED=true`, pushes only publish the image (safe while y
 ```bash
 # on EC2
 docker compose -f /opt/medeina/docker-compose.prod.yml --env-file /opt/medeina/.env ps
-curl -fsS https://getmedeina.duckdns.org/api/health
+curl -fsS https://medeina.duckdns.org/api/health
 ```
 
 Local equivalent remains:

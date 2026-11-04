@@ -22,3 +22,7 @@ getcasty.duckdns.org {
 pathquire.duckdns.org {
 	redir https://{$DOMAIN}{uri} permanent
 }
+
+getmedeina.duckdns.org {
+	redir https://{$DOMAIN}{uri} permanent
+}

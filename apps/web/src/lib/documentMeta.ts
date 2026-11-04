@@ -1,4 +1,4 @@
-const SITE = 'https://getmedeina.duckdns.org'
+const SITE = 'https://medeina.duckdns.org'
 
 export function setDocumentMeta({
   title,

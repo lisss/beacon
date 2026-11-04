@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     youtube_api_key: str = ""
     google_books_api_key: str = ""
     github_token: str = ""
-    public_site_url: str = "https://getmedeina.duckdns.org"
+    public_site_url: str = "https://medeina.duckdns.org"
     google_site_verification: str = ""
 
     @property
