@@ -34,8 +34,8 @@ export function TodoPage() {
 
   useEffect(() => {
     setDocumentMeta({
-      title: 'Learning list | Pathquire',
-      description: 'Your saved Pathquire study materials — books, courses, and interview prep.',
+      title: 'Learning list | Shine',
+      description: 'Your saved Shine study materials — books, courses, and interview prep.',
       path: '/learning-list',
     })
   }, [])
@@ -43,8 +43,8 @@ export function TodoPage() {
   useEffect(() => {
     void reload()
     const sync = () => setItems(listTodoLocal())
-    window.addEventListener('pathquire-todo-changed', sync)
-    return () => window.removeEventListener('pathquire-todo-changed', sync)
+    window.addEventListener('shine-todo-changed', sync)
+    return () => window.removeEventListener('shine-todo-changed', sync)
   }, [])
 
   async function onRemove(url: string) {

@@ -1,18 +1,18 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: pathquire-db
+    container_name: shine-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: pathquire
-      POSTGRES_PASSWORD: pathquire
-      POSTGRES_DB: pathquire
+      POSTGRES_USER: shine
+      POSTGRES_PASSWORD: shine
+      POSTGRES_DB: shine
     ports:
       - "5432:5432"
     volumes:
-      - casty_pgdata:/var/lib/postgresql/data
+      - shine_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pathquire -d pathquire"]
+      test: ["CMD-SHELL", "pg_isready -U shine -d shine"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pathquire-api
+    container_name: shine-api
     restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       PORT: "8000"
-      DATABASE_URL: postgresql+psycopg://pathquire:pathquire@db:5432/pathquire
+      DATABASE_URL: postgresql+psycopg://shine:shine@db:5432/shine
       API_CORS_ORIGINS: http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000,http://127.0.0.1:3000
       REMOTIVE_ENABLED: "true"
       YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
@@ -50,4 +50,4 @@ services:
       start_period: 20s
 
 volumes:
-  casty_pgdata:
+  shine_pgdata:

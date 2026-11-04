@@ -13,7 +13,7 @@ import httpx
 from app.core.config import get_settings
 from app.models.schemas import ResourceOut, ResourceReview
 
-USER_AGENT = "pathquire/1.0 (learning insights; +https://github.com/pathquire)"
+USER_AGENT = "shine/1.0 (learning insights; +https://github.com/shine)"
 TIMEOUT = 8.0
 
 _CACHE: dict[str, tuple[float, Any]] = {}

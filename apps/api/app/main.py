@@ -32,14 +32,14 @@ async def lifespan(_: FastAPI):
             seed_sample_jobs(session)
     except Exception as exc:
         # Allow API to boot even if DB is temporarily unavailable
-        print(f"[pathquire] DB init warning: {exc}")
+        print(f"[shine] DB init warning: {exc}")
     yield
 
 
 settings = get_settings()
 
 app = FastAPI(
-    title="Pathquire API",
+    title="Shine API",
     description="Job + learning insights aggregator",
     version="0.1.0",
     lifespan=lifespan,
@@ -62,7 +62,7 @@ app.include_router(router, prefix="/api")
 
 @app.get("/api")
 def api_root() -> dict:
-    return {"name": "pathquire-api", "docs": "/docs"}
+    return {"name": "shine-api", "docs": "/docs"}
 
 
 @app.get("/robots.txt", response_class=PlainTextResponse)
@@ -146,4 +146,4 @@ else:
 
     @app.get("/")
     def root() -> dict:
-        return {"name": "pathquire-api", "docs": "/docs", "hint": "UI not bundled"}
+        return {"name": "shine-api", "docs": "/docs", "hint": "UI not bundled"}

@@ -1,5 +1,5 @@
 """
-pathquire API — FastAPI backend.
+shine API — FastAPI backend.
 
 Local:
   source .venv/bin/activate
