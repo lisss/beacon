@@ -97,24 +97,25 @@ def role_seo_page(slug: str) -> str:
     return build_role_page_html(settings.site_url, title)
 
 
-@app.api_route("/google{code}.html", methods=["GET", "HEAD"])
-def google_site_verification_file(code: str) -> Response:
-    """
-    Google Search Console HTML-file verification.
-    Body must match the downloaded file exactly: one line, no trailing newline.
-    HEAD must succeed too; a GET-only route returns 405 and Search Console
-    treats the file as missing.
-    """
-    import re
+# Exact bytes of the file downloaded from Search Console. No trailing newline.
+_GOOGLE_VERIFY_NAME = "googlef3c3eb3feaeda967.html"
+_GOOGLE_VERIFY_BODY = b"google-site-verification: googlef3c3eb3feaeda967.html"
 
-    if not re.fullmatch(r"[A-Za-z0-9_-]{6,128}", code):
-        raise HTTPException(status_code=404, detail="Not found")
-    body = f"google-site-verification: google{code}.html".encode("ascii")
+
+@app.api_route(f"/{_GOOGLE_VERIFY_NAME}", methods=["GET", "HEAD"])
+def google_site_verification_file() -> Response:
     return Response(
-        content=body,
+        content=_GOOGLE_VERIFY_BODY,
         media_type="text/html",
-        headers={"Cache-Control": "no-store"},
+        headers={"Cache-Control": "public, max-age=300"},
     )
+
+
+@app.api_route("/google{code}.html", methods=["GET", "HEAD"])
+def google_site_verification_missing(code: str) -> Response:
+    # Search Console also requests a filename that was never uploaded.
+    # A 200 for that probe means it cannot tell the real file exists.
+    raise HTTPException(status_code=404, detail="Not found")
 
 
 def _spa_html(noindex: bool = False) -> Response:
@@ -151,8 +152,8 @@ if STATIC_DIR.is_dir():
     def spa_index() -> FileResponse:
         return _spa_html()
 
-    @app.get("/{full_path:path}")
-    def spa_fallback(full_path: str) -> FileResponse:
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"])
+    def spa_fallback(full_path: str) -> Response:
         candidate = (STATIC_DIR / full_path).resolve()
         if candidate.is_file() and str(candidate).startswith(str(STATIC_DIR.resolve())):
             # Fingerprinted /assets/* can be cached; other static files stay short-lived.
@@ -160,8 +161,11 @@ if STATIC_DIR.is_dir():
             if "/assets/" in str(candidate) or candidate.parent == assets_dir:
                 headers["Cache-Control"] = "public, max-age=31536000, immutable"
             return FileResponse(candidate, headers=headers)
-        noindex = full_path.strip("/") == "learning-list"
-        return _spa_html(noindex=noindex)
+        # Unknown URLs must be real 404s. A 200 for a missing page makes
+        # Search Console treat the verification file as missing too.
+        if full_path.strip("/") == "learning-list":
+            return _spa_html(noindex=True)
+        raise HTTPException(status_code=404, detail="Not found")
 else:
 
     @app.get("/")
