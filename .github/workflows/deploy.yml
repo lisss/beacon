@@ -62,8 +62,8 @@ jobs:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
-          GHCR_USER: ${{ secrets.GHCR_USER }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN || github.token }}
+          GHCR_USER: ${{ secrets.GHCR_USER || github.actor }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -74,13 +74,18 @@ jobs:
             set -euo pipefail
             APP_DIR="${{ vars.APP_DIR }}"
             APP_DIR="${APP_DIR:-/opt/beacon}"
+            for old in /opt/medeina /opt/pathquire /opt/casty /opt/cast /opt/jobify; do
+              if [ -d "$old" ] && [ ! -e "$APP_DIR" ]; then
+                sudo mv "$old" "$APP_DIR"
+              fi
+            done
             cd "$APP_DIR"
+            git remote set-url origin https://github.com/${{ github.repository }}.git 2>/dev/null || true
             git fetch --depth 1 origin main
             git reset --hard origin/main
 
-            if [ -n "${GHCR_TOKEN:-}" ]; then
-              echo "$GHCR_TOKEN" | docker login ghcr.io -u "${GHCR_USER:-${{ github.repository_owner }}}" --password-stdin
-            fi
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+
 
             IMAGE="ghcr.io/${{ github.repository }}:latest"
             if grep -q '^IMAGE=' .env 2>/dev/null; then
