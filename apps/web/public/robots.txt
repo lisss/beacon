@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://medeina.duckdns.org/sitemap.xml
+Sitemap: https://getbeacon.duckdns.org/sitemap.xml

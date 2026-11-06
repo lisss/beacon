@@ -7,7 +7,7 @@ type LogoProps = {
   asHeading?: boolean
 }
 
-export function MedeinaMark({ className = '' }: { className?: string }) {
+export function BeaconMark({ className = '' }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -33,13 +33,13 @@ export function MedeinaMark({ className = '' }: { className?: string }) {
 
 export function Logo({
   className = '',
-  title = 'Medeina',
+  title = 'Beacon',
   onClick,
   asHeading = false,
 }: LogoProps) {
   const inner = (
     <>
-      <MedeinaMark className="logo-mark" />
+      <BeaconMark className="logo-mark" />
       <span className="logo-wordmark">{title}</span>
     </>
   )

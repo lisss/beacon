@@ -1,5 +1,5 @@
 """
-medeina API — FastAPI backend.
+beacon API — FastAPI backend.
 
 Local:
   source .venv/bin/activate
