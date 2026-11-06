@@ -100,7 +100,8 @@ jobs:
               COMPOSE+=(--profile duckdns)
             fi
 
+            docker image prune -af
             "${COMPOSE[@]}" pull
-            "${COMPOSE[@]}" up -d --remove-orphans
+            "${COMPOSE[@]}" up -d --force-recreate --remove-orphans
             docker image prune -f
             "${COMPOSE[@]}" ps
